@@ -150,8 +150,8 @@ const styles = StyleSheet.create({
   },
   divider: {
     flex: 1,
-    height: 1,
-    backgroundColor: "#ddd",
+    height: 2,
+    backgroundColor: "#7EADE5",
   },
   dividerText: {
     marginHorizontal: 10,
@@ -177,12 +177,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   qrCodeContainer: {
-    marginTop: 20,
+    marginTop: 50,
     alignItems: "center",
   },
   qrCodeFrame: {
-    width: 110,
-    height: 110,
+    width: 40,
+    height: 40,
     borderRadius: 15,
     backgroundColor: "white",
     justifyContent: "center",

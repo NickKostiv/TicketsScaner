@@ -6,8 +6,10 @@ import {
   Alert,
   Modal,
   Image,
+  Animated,
+  Easing,
 } from "react-native";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "expo-router";
 import QRBg from "../assets/images/QR-Bg.svg";
 import {
@@ -26,12 +28,41 @@ export default function ScannerScreen() {
   const [ticketValid, setTicketValid] = useState(true); // Always valid for now
   const router = useRouter();
 
+  // Animation for the scanning line
+  const scanLineAnimation = useRef(new Animated.Value(0)).current;
+
   // Check permission status when it changes
   useEffect(() => {
+    // Start the animation when component mounts
+    startScanLineAnimation();
+
     if (permission?.granted) {
       setShowPermissionDialog(false);
     }
   }, [permission]);
+
+  const startScanLineAnimation = () => {
+    // Reset the animation value
+    scanLineAnimation.setValue(0);
+
+    // Create the animation
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(scanLineAnimation, {
+          toValue: 1,
+          duration: 2000,
+          easing: Easing.linear,
+          useNativeDriver: true,
+        }),
+        Animated.timing(scanLineAnimation, {
+          toValue: 0,
+          duration: 2000,
+          easing: Easing.linear,
+          useNativeDriver: true,
+        }),
+      ])
+    ).start();
+  };
 
   const handleRequestPermission = async () => {
     try {
@@ -73,13 +104,6 @@ export default function ScannerScreen() {
   const handleManualEntry = () => {
     // Handle manual entry functionality
     Alert.alert("Ручне введення", "Функція ще не реалізована");
-  };
-
-  // For testing only - trigger the valid ticket modal
-  const testShowValidTicket = () => {
-    setScanned(true);
-    setTicketValid(true);
-    setShowResultModal(true);
   };
 
   if (showPermissionDialog) {
@@ -126,7 +150,24 @@ export default function ScannerScreen() {
 
           {/* QR Frame Overlay */}
           <View style={styles.overlayContainer}>
-            <View style={styles.scannerFrame} />
+            <View style={styles.scannerFrame}>
+              {/* Animated scanning line */}
+              <Animated.View
+                style={[
+                  styles.scanLine,
+                  {
+                    transform: [
+                      {
+                        translateY: scanLineAnimation.interpolate({
+                          inputRange: [0, 1],
+                          outputRange: [0, 240], // height of scannerFrame - scanLine.height
+                        }),
+                      },
+                    ],
+                  },
+                ]}
+              />
+            </View>
 
             {/* Manual Entry Button */}
             <TouchableOpacity
@@ -134,33 +175,23 @@ export default function ScannerScreen() {
               onPress={handleManualEntry}>
               <Text style={styles.manualEntryText}>Ввести вручну</Text>
             </TouchableOpacity>
-
-            {/* For testing - place below the manual entry button */}
-            <TouchableOpacity
-              style={[styles.manualEntryButton, { marginTop: 10 }]}
-              onPress={testShowValidTicket}>
-              <Text style={styles.manualEntryText}>Тест: Дійсний квиток</Text>
-            </TouchableOpacity>
           </View>
 
           {/* Bottom Navigation */}
           <View style={styles.bottomNav}>
             <TouchableOpacity style={styles.navButton}>
-              <Ionicons name="person-outline" size={24} color="black" />
+              <Ionicons name="person-outline" size={24} color="#001F3F" />
             </TouchableOpacity>
 
             <View style={styles.scannerIconContainer}>
               <View style={styles.scannerIcon}>
-                <Image
-                  source={require("../assets/images/ScanAuthImg.png")}
-                  style={styles.scannerIconImage}
-                />
+                <QRBg width={50} height={50} />
               </View>
               <Text style={styles.scannerText}>Сканування...</Text>
             </View>
 
             <TouchableOpacity style={styles.navButton}>
-              <Ionicons name="menu-outline" size={24} color="black" />
+              <Ionicons name="menu-outline" size={24} color="#001F3F" />
             </TouchableOpacity>
           </View>
         </View>
@@ -171,11 +202,6 @@ export default function ScannerScreen() {
             style={[styles.button, styles.allowButton]}
             onPress={handleRequestPermission}>
             <Text style={styles.buttonText}>ДОЗВОЛИТИ КАМЕРУ</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.button, styles.allowButton, { marginTop: 20 }]}
-            onPress={testShowValidTicket}>
-            <Text style={styles.buttonText}>ТЕСТ: КВИТОК ДІЙСНИЙ</Text>
           </TouchableOpacity>
         </View>
       )}
@@ -302,6 +328,14 @@ const styles = StyleSheet.create({
     borderColor: "#7EADE5",
     borderRadius: 20,
     backgroundColor: "transparent",
+    overflow: "hidden",
+    position: "relative",
+  },
+  scanLine: {
+    height: 3,
+    width: "100%",
+    backgroundColor: "#7EADE5",
+    position: "absolute",
   },
   manualEntryButton: {
     marginTop: 20,
@@ -335,9 +369,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   scannerIcon: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
+    width: 70,
+    height: 70,
+    borderRadius: 35,
     backgroundColor: "white",
     justifyContent: "center",
     alignItems: "center",
@@ -347,6 +381,8 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 3,
     marginBottom: 5,
+    borderWidth: 1,
+    borderColor: "#ccc",
   },
   scannerIconImage: {
     width: 30,
@@ -355,6 +391,7 @@ const styles = StyleSheet.create({
   },
   scannerText: {
     fontSize: 12,
+    color: "#333",
   },
   modalBackground: {
     flex: 1,

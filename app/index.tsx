@@ -12,7 +12,6 @@ import {
   SafeAreaView,
   Alert,
 } from "react-native";
-import { BarCodeScannerResult } from "expo-barcode-scanner";
 
 export default function LoginScreen() {
   const [email, setEmail] = useState("");
@@ -57,10 +56,6 @@ export default function LoginScreen() {
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const handleBarCodeScanned = (scanResult: BarCodeScannerResult) => {
-    // Function body...
   };
 
   return (

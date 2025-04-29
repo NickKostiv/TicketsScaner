@@ -27,6 +27,7 @@ export default function RootLayout() {
     <ThemeProvider value={DefaultTheme}>
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="index" />
+        <Stack.Screen name="scanner" />
         <Stack.Screen name="+not-found" />
       </Stack>
       <StatusBar style="auto" />

@@ -1,5 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
-import { Link } from "expo-router";
+import { useRouter } from "expo-router";
 import GoogleLogo from "../assets/images/GoogleLogo.svg";
 import { useState } from "react";
 import {
@@ -10,12 +10,58 @@ import {
   StyleSheet,
   Image,
   SafeAreaView,
+  Alert,
 } from "react-native";
+import { BarCodeScannerResult } from "expo-barcode-scanner";
 
 export default function LoginScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
+
+  const validateEmail = (email: string) => {
+    return /\S+@\S+\.\S+/.test(email);
+  };
+
+  const handleLogin = async () => {
+    // Basic validation
+    if (!email || !password) {
+      Alert.alert("Помилка", "Будь ласка, заповніть всі поля");
+      return;
+    }
+
+    if (!validateEmail(email)) {
+      Alert.alert("Помилка", "Будь ласка, введіть коректний email");
+      return;
+    }
+
+    if (password.length < 6) {
+      Alert.alert("Помилка", "Пароль має містити не менше 6 символів");
+      return;
+    }
+
+    setIsLoading(true);
+
+    // Simulate API call
+    try {
+      // Fake API call delay
+      await new Promise(resolve => setTimeout(resolve, 1500));
+
+      // Always succeed for now
+      // Navigate to scanner screen
+      router.push("/scanner");
+    } catch (error) {
+      Alert.alert("Помилка", "Не вдалося увійти. Спробуйте ще раз.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleBarCodeScanned = (scanResult: BarCodeScannerResult) => {
+    // Function body...
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -55,8 +101,13 @@ export default function LoginScreen() {
             </TouchableOpacity>
           </View>
 
-          <TouchableOpacity style={styles.loginButton}>
-            <Text style={styles.loginButtonText}>УВІЙТИ</Text>
+          <TouchableOpacity
+            style={styles.loginButton}
+            onPress={handleLogin}
+            disabled={isLoading}>
+            <Text style={styles.loginButtonText}>
+              {isLoading ? "ЗАВАНТАЖЕННЯ..." : "УВІЙТИ"}
+            </Text>
           </TouchableOpacity>
 
           <View style={styles.dividerContainer}>
@@ -72,12 +123,14 @@ export default function LoginScreen() {
         </View>
 
         <View style={styles.qrCodeContainer}>
-          <View style={styles.qrCodeFrame}>
+          <TouchableOpacity
+            style={styles.qrCodeFrame}
+            onPress={() => router.push("/scanner")}>
             <Image
               source={require("../assets/images/ScanAuthImg.png")}
               style={styles.scanAuthImage}
             />
-          </View>
+          </TouchableOpacity>
         </View>
       </View>
     </SafeAreaView>

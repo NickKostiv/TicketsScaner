@@ -3,7 +3,6 @@ import {
   CameraView,
   useCameraPermissions,
 } from "expo-camera";
-import { useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import {
   Alert,
@@ -17,6 +16,7 @@ import {
 } from "react-native";
 import QRBg from "../../assets/images/QR-Bg.svg";
 
+import { useLocalSearchParams } from "expo-router";
 import { styles } from "./styles";
 
 export default function Scanner() {
@@ -25,9 +25,10 @@ export default function Scanner() {
   const [scanned, setScanned] = useState(false);
   const [showResultModal, setShowResultModal] = useState(false);
   const [ticketValid, setTicketValid] = useState(true);
-  const router = useRouter();
 
   const scanLineAnimation = useRef(new Animated.Value(0)).current;
+
+  const { hall, session } = useLocalSearchParams();
 
   useEffect(() => {
     startScanLineAnimation();
@@ -131,6 +132,27 @@ export default function Scanner() {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <View style={styles.container}>
+        <View
+          style={{
+            paddingHorizontal: 20,
+            paddingVertical: 14,
+            rowGap: 8,
+          }}
+        >
+          <View
+            style={{ flexDirection: "row", alignItems: "center", columnGap: 8 }}
+          >
+            <Text style={{ fontSize: 20 }}>Зал:</Text>
+            <Text style={{ fontSize: 18 }}>{hall}</Text>
+          </View>
+          <View
+            style={{ flexDirection: "row", alignItems: "center", columnGap: 8 }}
+          >
+            <Text style={{ fontSize: 20 }}>Сеанс:</Text>
+            <Text style={{ fontSize: 18 }}>{session}</Text>
+          </View>
+        </View>
+
         {permission?.granted ? (
           <View style={{ flex: 1 }}>
             <View style={styles.cameraContainer}>
@@ -175,23 +197,6 @@ export default function Scanner() {
               <Text style={styles.infoText}>Куплено квитків: 100</Text>
               <Text style={styles.infoText}>Відскановано квитків: 100</Text>
             </View>
-
-            {/* <View style={styles.bottomNav}>
-              <TouchableOpacity style={styles.navButton}>
-                <Ionicons name="person-outline" size={24} color="#001F3F" />
-              </TouchableOpacity>
-
-              <View style={styles.scannerIconContainer}>
-                <View style={styles.scannerIcon}>
-                  <QRBg width={50} height={50} />
-                </View>
-                <Text style={styles.scannerText}>Сканування...</Text>
-              </View>
-
-              <TouchableOpacity style={styles.navButton}>
-                <Ionicons name="menu-outline" size={24} color="#001F3F" />
-              </TouchableOpacity>
-            </View> */}
           </View>
         ) : (
           <View style={styles.noCameraContainer}>

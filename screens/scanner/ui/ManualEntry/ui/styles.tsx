@@ -1,20 +1,20 @@
 import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#EFF6FF",
+  wrapper: {
+    marginVertical: 12,
+    paddingHorizontal: 30,
+    rowGap: 26,
   },
 
-  info: {
-    flex: 1,
-    marginTop: 16,
-    paddingHorizontal: 16,
+  codeInput: {
+    borderWidth: 1,
+    borderRadius: 12,
+    borderColor: "black",
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    fontSize: 16,
   },
-  infoText: {
-    fontSize: 18,
-  },
-
   manualEntryButton: {
     paddingVertical: 12,
     backgroundColor: "#7EADE5",

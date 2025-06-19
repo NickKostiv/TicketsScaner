@@ -42,7 +42,7 @@ export const styles = StyleSheet.create({
   },
   buttonOption: {
     backgroundColor: "#7EADE5",
-    borderRadius: 20,
+    borderRadius: 12,
     height: 50,
     justifyContent: "center",
     alignItems: "center",

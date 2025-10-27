@@ -7,11 +7,15 @@ import Select from "react-native-picker-select";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Picker } from '@react-native-picker/picker'
 
-const mockHall = [
-  { label: "Vip", value: "VIP" },
-  { label: "Deluxe", value: "DELUXE" },
-  { label: "Standard", value: "STANDARD" },
-];
+// const mockHall = [
+//   { label: "Vip", value: "VIP" },
+//   { label: "Deluxe", value: "DELUXE" },
+//   { label: "Standard", value: "STANDARD" },
+// ];
+
+import { getHalls as getHallsApi } from "@/api/services/halls";
+
+
 const mockSession = [
   { label: "Oppenheimer", value: "Oppenheimer" },
   { label: "Dune: Part Two", value: "Dune: Part Two" },
@@ -20,6 +24,12 @@ const mockSession = [
 ];
 
 export default function OptionsSelection() {
+  const getHalls = async () => {
+    const halls = await getHallsApi();
+    return halls.map((hall) => ({ label: hall.name, value: hall.id }));
+  };
+  
+  const halls =   getHalls();
   const router = useRouter();
 
   const [selectedHall, setSelectedHall] = useState<string | null>(null);
@@ -51,7 +61,7 @@ export default function OptionsSelection() {
             placeholder={{ label: "Оберіть зал", value: null }}
             onValueChange={(value) => setSelectedHall(value)}
             value={selectedHall}
-            items={mockHall}
+            items={halls}
             
             onClose={() => {
               console.log("closed");

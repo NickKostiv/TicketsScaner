@@ -1,13 +1,11 @@
 import { View } from "react-native";
 import { LogoutButton } from "./ui/LogoutButton/LogoutButton";
+import { headerStyles } from "./styles";
 
 export const Header = () => {
   return (
     <View
-      style={{
-        paddingHorizontal: 20,
-        alignItems: "flex-end",
-      }}
+      style={headerStyles.header}
     >
       <LogoutButton />
     </View>

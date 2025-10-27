@@ -16,13 +16,10 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Keyboard } from "react-native";
 
-import { useThemeColor } from "@/hooks/useThemeColor";
 import { styles } from "./styles";
 
 export default function Login() {
   const router = useRouter();
-  const primaryColor = useThemeColor({}, "primary");
-  const notificationColor = useThemeColor({}, "popover");
   const [email, setEmail] = useState("owner@example.com");
   const [password, setPassword] = useState("secret");
   const [showPassword, setShowPassword] = useState(false);
@@ -185,18 +182,9 @@ export default function Login() {
         {/* Error message */}
         {errorMessage && (
           <View
-            style={{
-              position: "absolute",
-              left: 16,
-              right: 16,
-              bottom: 24,
-              backgroundColor: primaryColor,
-              borderRadius: 20,
-              paddingVertical: 10,
-              paddingHorizontal: 12,
-            }}
+              style={styles.errorMessage}
           >
-            <Text style={{ color: notificationColor, textAlign: "center" }}>
+            <Text style={styles.errorMessageText}>
               {errorMessage}
             </Text>
           </View>

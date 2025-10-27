@@ -28,7 +28,7 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: "Параметри",
+          title: "Вибір сесії",
           tabBarIcon: ({ color }) => <Settings size={30} color={color} />,
         }}
       />

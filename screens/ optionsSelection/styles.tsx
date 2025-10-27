@@ -1,3 +1,4 @@
+import { Colors } from "@/constants/Colors";
 import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
@@ -5,7 +6,8 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 50,
     paddingTop: 20,
     paddingBottom: 50,
-    flex: 1,
+    // flex: 1,
+    backgroundColor: Colors.light.background, 
   },
   title: {
     fontSize: 26,
@@ -20,6 +22,7 @@ export const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 500,
     marginLeft: 4,
+    marginBottom: 10,
   },
   selectHallContainer: {
     backgroundColor: "white",

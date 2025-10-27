@@ -1,8 +1,7 @@
 import { StyleSheet } from "react-native";
-import { useThemeColor } from "@/hooks/useThemeColor";
+import { Colors } from "@/constants/Colors";
 
 export const styles = StyleSheet.create({
- 
   container: {
     flex: 1,
     backgroundColor: "#EFF6FF",
@@ -55,6 +54,20 @@ export const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginTop: 10,
+  },
+  errorMessage: {
+    position: "absolute",
+    left: 16,
+    right: 16,
+    bottom: 24,
+    backgroundColor: Colors.light.primary,
+    borderRadius: 20,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+  },
+  errorMessageText: {
+    color: Colors.light.white,
+    textAlign: "center",
   },
   loginButtonText: {
     color: "white",

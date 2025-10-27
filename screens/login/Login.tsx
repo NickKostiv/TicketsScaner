@@ -17,10 +17,13 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Keyboard } from "react-native";
 
 import { styles } from "./styles";
+import { getCinemaIdFromToken, getStoredCinemaId } from "@/utils/jwt";
 
 export default function Login() {
+
+  
   const router = useRouter();
-  const [email, setEmail] = useState("owner@example.com");
+  const [email, setEmail] = useState("manager@example.com");
   const [password, setPassword] = useState("secret");
   const [showPassword, setShowPassword] = useState(false);
   const [isValidEmail, setIsValidEmail] = useState(true);
@@ -40,6 +43,12 @@ export default function Login() {
     onSuccess: async (data) => {
       await AsyncStorage.setItem("accessToken", data.token);
       await AsyncStorage.setItem("refreshToken", data.refreshToken);
+      const cinemaId = getCinemaIdFromToken(data.token);
+      if (cinemaId) {
+        await AsyncStorage.setItem("cinemaId", cinemaId);
+      } 
+      // console.log('Cinema ID', cinemaId);
+
 
       router.push("/(tabs)");
       resetForm();
@@ -80,6 +89,8 @@ export default function Login() {
       });
     },
   });
+
+ 
 
   const handleLogin = async () => {
     const isEmailValid = validateEmail(email);

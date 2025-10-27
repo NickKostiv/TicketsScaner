@@ -22,6 +22,7 @@ export type Personnel = {
   photo?: FileType | null;
   role: Role;
   status?: Status;
+  cinemaId?: string | null;
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date;

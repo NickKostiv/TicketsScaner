@@ -2,20 +2,19 @@ import { useRouter } from "expo-router";
 import { Text, TouchableOpacity, View } from "react-native";
 import { styles } from "./styles";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Select from "react-native-picker-select";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Picker } from '@react-native-picker/picker'
 
-// const mockHall = [
-//   { label: "Vip", value: "VIP" },
-//   { label: "Deluxe", value: "DELUXE" },
-//   { label: "Standard", value: "STANDARD" },
-// ];
+const mockHall = [
+  { label: "Vip", value: "VIP" },
+  { label: "Deluxe", value: "DELUXE" },
+  { label: "Standard", value: "STANDARD" },
+];
 
 import { getHalls as getHallsApi } from "@/api/services/halls";
-
-
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { getSessions as getSessionsApi } from "@/api/services/sessions";
 const mockSession = [
   { label: "Oppenheimer", value: "Oppenheimer" },
   { label: "Dune: Part Two", value: "Dune: Part Two" },
@@ -24,16 +23,54 @@ const mockSession = [
 ];
 
 export default function OptionsSelection() {
-  const getHalls = async () => {
-    const halls = await getHallsApi();
-    return halls.map((hall) => ({ label: hall.name, value: hall.id }));
-  };
-  
-  const halls =   getHalls();
   const router = useRouter();
 
   const [selectedHall, setSelectedHall] = useState<string | null>(null);
   const [selectedSession, setSelectedSession] = useState<string | null>(null);
+  const [cinemaId, setCinemaId] = useState<string | null>(null);
+  const [hallOptions, setHallOptions] = useState<
+    { label: string; value: string }[]
+  >([]);
+  const [sessionOptions, setSessionOptions] = useState<
+    { label: string; value: string }[]
+  >([]);
+  const [isLoadingHalls, setIsLoadingHalls] = useState(false);
+
+  useEffect(() => {
+    const getCinemaId = async () => {
+      try {
+        const id = await AsyncStorage.getItem("cinemaId");
+        console.log("cinemaId", id);
+        setCinemaId(id);
+      } catch (e) {
+        setCinemaId(null);
+      }
+    };
+    getCinemaId();
+  }, []);
+
+  // Load halls when cinemaId available
+  useEffect(() => {
+    if (!cinemaId) return;
+    getHallsApi(cinemaId).then((halls) => {
+      setHallOptions(halls.map((hall) => ({ label: hall.name, value: hall.id })));
+    });
+  }, [cinemaId]);
+
+  // Load sessions only after user selects hall
+  useEffect(() => {
+    if (!cinemaId || !selectedHall) return;
+    getSessionsApi({
+      page: 1,
+      limit: 10,
+      filters: { hallId: selectedHall, cinemaId },
+      // sort: [{ orderBy: 'name', order: 'ASC' }],
+    }).then((sessions) => {
+      setSessionOptions(
+        sessions.map((session) => ({ label: session.movie.title, value: session.id }))
+      );
+    });
+  }, [cinemaId, selectedHall]);
 
   const goToScanning = () => {
     router.push({
@@ -47,30 +84,22 @@ export default function OptionsSelection() {
 
   const isDisabled = !selectedHall || !selectedSession;
   return (
-    <SafeAreaView edges={["top", "bottom"]} >
-     
-        <Text >Вибір параметрів</Text>
+    <SafeAreaView edges={["top", "bottom"]}>
+      <Text>Вибір параметрів</Text>
 
-        <View >
-          <Text >Вибір залу</Text>
+      <View>
+        <Text>Вибір залу</Text>
 
-          <Select
-            style={{
-              viewContainer: styles.selectHallContainer,
-            }}
-            placeholder={{ label: "Оберіть зал", value: null }}
-            onValueChange={(value) => setSelectedHall(value)}
-            value={selectedHall}
-            items={halls}
-            
-            onClose={() => {
-              console.log("closed");
-            }}
-            onOpen={() => {
-              console.log("opened");
-            }}
-          />
-          {/* <Select
+        <Select
+          style={{
+            viewContainer: styles.selectHallContainer,
+          }}
+          placeholder={{ label: "Оберіть зал", value: null }}
+          onValueChange={(value) => setSelectedHall(value)}
+          value={selectedHall}
+          items={hallOptions}
+        />
+        {/* <Select
             style={{
               viewContainer: styles.selectHallContainer,
             }}
@@ -79,9 +108,9 @@ export default function OptionsSelection() {
             value={selectedHall}
             items={mockHall}
           /> */}
-        </View>
+      </View>
 
-        {/* <View style={styles.wrapperSessionSelect}>
+      {/* <View style={styles.wrapperSessionSelect}>
           <Text style={styles.sessionLabel}>Вибір сеансу</Text>
           <Select
             style={{
@@ -100,7 +129,6 @@ export default function OptionsSelection() {
         >
           <Text style={styles.buttonOptionText}>Перейти до сканування</Text>
         </TouchableOpacity> */}
-
     </SafeAreaView>
   );
 }

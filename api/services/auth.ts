@@ -19,6 +19,7 @@ authInstance.interceptors.request.use(async (config) => {
 
 export const login = async (body: LoginData): Promise<LoginResponse> => {
   const { data } = await authInstance.post("/crm/login", body);
+  
   return data;
 };
 

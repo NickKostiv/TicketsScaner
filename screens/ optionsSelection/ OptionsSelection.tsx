@@ -4,6 +4,7 @@ import { styles } from "./styles";
 
 import { useState } from "react";
 import Select from "react-native-picker-select";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const mockHall = [
   { label: "Vip", value: "VIP" },
@@ -35,7 +36,8 @@ export default function OptionsSelection() {
 
   const isDisabled = !selectedHall || !selectedSession;
   return (
-    <View style={styles.wrapper}>
+    <SafeAreaView edges={['top', 'left', 'right']} style={styles.wrapper}  >
+    {/* <View > */}
       <Text style={styles.title}>Вибір параметрів</Text>
 
       <View style={styles.wrapperHallSelect}>
@@ -55,7 +57,35 @@ export default function OptionsSelection() {
         <Text style={styles.sessionLabel}>Вибір сеансу</Text>
         <Select
           style={{
-            viewContainer: styles.selectSessionContainer,
+            inputIOS: {
+              // Стиль для iOS
+              fontSize: 16,
+              paddingVertical: 12,
+              paddingHorizontal: 10,
+              borderWidth: 1,
+              borderColor: 'gray',
+              borderRadius: 4,
+              color: 'black',
+              paddingRight: 30, // щоб текст не перекривав стрілку
+            },
+            inputAndroid: {
+              // Стиль для Android
+              fontSize: 16,
+              paddingHorizontal: 10,
+              paddingVertical: 8,
+              borderWidth: 0.5,
+              borderColor: 'purple',
+              borderRadius: 8,
+              color: 'black',
+              paddingRight: 30,
+            },
+            placeholder: {
+              color: 'gray',
+            },
+            iconContainer: {
+              top: 10,
+              right: 12,
+            },
           }}
           placeholder={{ label: "Оберіть сеанс", value: null }}
           onValueChange={(value) => setSelectedSession(value)}
@@ -70,6 +100,7 @@ export default function OptionsSelection() {
       >
         <Text style={styles.buttonOptionText}>Перейти до сканування</Text>
       </TouchableOpacity>
-    </View>
+    {/* </View> */}
+    </SafeAreaView>
   );
 }

@@ -1,76 +1,43 @@
 import { useRouter } from "expo-router";
-import { Text, TouchableOpacity, View } from "react-native";
+import { Text, TouchableOpacity, View, ScrollView } from "react-native";
 import { styles } from "./styles";
 
 import { useEffect, useState } from "react";
-import Select from "react-native-picker-select";
+
 import { SafeAreaView } from "react-native-safe-area-context";
-
-const mockHall = [
-  { label: "Vip", value: "VIP" },
-  { label: "Deluxe", value: "DELUXE" },
-  { label: "Standard", value: "STANDARD" },
-];
-
-import { getHalls as getHallsApi } from "@/api/services/halls";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { getSessions as getSessionsApi } from "@/api/services/sessions";
-const mockSession = [
-  { label: "Oppenheimer", value: "Oppenheimer" },
-  { label: "Dune: Part Two", value: "Dune: Part Two" },
-  { label: "Barbie", value: "Barbie" },
-  { label: "The Batman", value: "The Batman" },
-];
+import { useDropdownClose } from "@/screens/ optionsSelection/hooks/useDropdownClose";
+import { Colors } from "@/constants/Colors";
+import { useGetCinemaId } from "@/hooks/useGetCinameId";
+import { useGetHallsOptions } from "@/screens/ optionsSelection/hooks/useGetHallsOptions";
+import { useGetSessionsOptions } from "@/screens/ optionsSelection/hooks/useGetSessionsOptions";
 
 export default function OptionsSelection() {
   const router = useRouter();
 
   const [selectedHall, setSelectedHall] = useState<string | null>(null);
   const [selectedSession, setSelectedSession] = useState<string | null>(null);
-  const [cinemaId, setCinemaId] = useState<string | null>(null);
-  const [hallOptions, setHallOptions] = useState<
-    { label: string; value: string }[]
-  >([]);
-  const [sessionOptions, setSessionOptions] = useState<
-    { label: string; value: string }[]
-  >([]);
-  const [isLoadingHalls, setIsLoadingHalls] = useState(false);
+  const { cinemaId } = useGetCinemaId();
+  const { hallOptions } = useGetHallsOptions(cinemaId);
+  const { sessionOptions } = useGetSessionsOptions(cinemaId, selectedHall);
+  const [isHallDropdownOpen, setIsHallDropdownOpen] = useState(false);
+  const [isSessionDropdownOpen, setIsSessionDropdownOpen] = useState(false);
 
-  useEffect(() => {
-    const getCinemaId = async () => {
-      try {
-        const id = await AsyncStorage.getItem("cinemaId");
-        console.log("cinemaId", id);
-        setCinemaId(id);
-      } catch (e) {
-        setCinemaId(null);
-      }
-    };
-    getCinemaId();
-  }, []);
+ 
+  console.log("hallOptions", hallOptions);
+  console.log("sessionOptions", sessionOptions);
 
-  // Load halls when cinemaId available
+// Reset session when hall changes
   useEffect(() => {
-    if (!cinemaId) return;
-    getHallsApi(cinemaId).then((halls) => {
-      setHallOptions(halls.map((hall) => ({ label: hall.name, value: hall.id })));
-    });
-  }, [cinemaId]);
+    setSelectedSession(null);
+    setIsSessionDropdownOpen(false);
+  }, [selectedHall]);
 
-  // Load sessions only after user selects hall
-  useEffect(() => {
-    if (!cinemaId || !selectedHall) return;
-    getSessionsApi({
-      page: 1,
-      limit: 10,
-      filters: { hallId: selectedHall, cinemaId },
-      // sort: [{ orderBy: 'name', order: 'ASC' }],
-    }).then((sessions) => {
-      setSessionOptions(
-        sessions.map((session) => ({ label: session.movie.title, value: session.id }))
-      );
-    });
-  }, [cinemaId, selectedHall]);
+useDropdownClose(
+  isHallDropdownOpen,
+  setIsHallDropdownOpen,
+  isSessionDropdownOpen,
+  setIsSessionDropdownOpen
+);
 
   const goToScanning = () => {
     router.push({
@@ -83,52 +50,112 @@ export default function OptionsSelection() {
   };
 
   const isDisabled = !selectedHall || !selectedSession;
+  const selectedHallLabel =
+    hallOptions.find((o) => o.value === selectedHall)?.label || "Оберіть зал";
+  const selectedSessionOption = sessionOptions.find((o) => o.value === selectedSession);
+  const selectedSessionLabel = selectedSessionOption?.label || "Оберіть сеанс";
+
   return (
-    <SafeAreaView edges={["top", "bottom"]}>
-      <Text>Вибір параметрів</Text>
+    <SafeAreaView style={styles.wrapper}>
+      <View style={styles.wrapperContent}>
+        <Text style={styles.title}>Вибір параметрів</Text>
 
-      <View>
-        <Text>Вибір залу</Text>
+        <View>
+          <Text style={styles.label}>Вибір залу</Text>
 
-        <Select
-          style={{
-            viewContainer: styles.selectHallContainer,
-          }}
-          placeholder={{ label: "Оберіть зал", value: null }}
-          onValueChange={(value) => setSelectedHall(value)}
-          value={selectedHall}
-          items={hallOptions}
-        />
-        {/* <Select
-            style={{
-              viewContainer: styles.selectHallContainer,
-            }}
-            placeholder={{ label: "Оберіть зал", value: null }}
-            onValueChange={(value) => setSelectedHall(value)}
-            value={selectedHall}
-            items={mockHall}
-          /> */}
-      </View>
+          {/* Hall selection */}
+          <View style={{ marginTop: 8 }}>
+            <TouchableOpacity
+              onPress={() => setIsHallDropdownOpen((p) => !p)}
+              activeOpacity={0.8}
+              style={styles.selector}
+            >
+              <Text
+                style={{ color: selectedHall ? Colors.light.text : Colors.light.textDisabled, fontSize: 16 }}
+              >
+                {selectedHallLabel}
+              </Text>
+            </TouchableOpacity>
 
-      {/* <View style={styles.wrapperSessionSelect}>
-          <Text style={styles.sessionLabel}>Вибір сеансу</Text>
-          <Select
-            style={{
-              viewContainer: styles.selectSessionContainer,
-            }}
-            placeholder={{ label: "Оберіть сеанс", value: null }}
-            onValueChange={(value) => setSelectedSession(value)}
-            value={selectedSession}
-            items={mockSession}
-          />
+            {isHallDropdownOpen && (
+              <View style={styles.selectorDropdown}>
+                <ScrollView style={{ maxHeight: 220 }}>
+                  {hallOptions.map((o) => (
+                    <TouchableOpacity
+                      key={o.value}
+                      onPress={() => {
+                        setSelectedHall(o.value);
+                        setIsHallDropdownOpen(false);
+                      }}
+                      style={{ paddingVertical: 10, paddingHorizontal: 12 }}
+                    >
+                      <Text style={{ fontSize: 16, color: Colors.light.text }}>
+                        {o.label}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </ScrollView>
+              </View>
+            )}
+          </View>
+
+          {/* Session selection */}
+          <View style={{ marginTop: 10 }}>
+            <Text style={styles.label}>Вибір сеансу</Text>
+            <View style={{ marginTop: 8 }}>
+              <TouchableOpacity
+                disabled={!selectedHall}
+                onPress={() => {
+                  if (!selectedHall) return;
+                  setIsSessionDropdownOpen((p) => !p);
+                }}
+                activeOpacity={0.8}
+                style={[styles.selector, { opacity: selectedHall ? 1 : 0.6 }]}
+              >
+                <Text
+                  style={{
+                    color: selectedSession ? Colors.light.text : Colors.light.textDisabled,
+                    fontSize: 16,
+                  }}
+                >
+                  {selectedSessionLabel}
+                </Text>
+              </TouchableOpacity>
+
+              {isSessionDropdownOpen && (
+                <View style={styles.selectorDropdown}>
+                  <ScrollView style={{ maxHeight: 220 }}>
+                  {sessionOptions.map((o) => (
+                      <TouchableOpacity
+                        key={o.value}
+                        onPress={() => {
+                          setSelectedSession(o.value);
+                          setIsSessionDropdownOpen(false);
+                        }}
+                        style={{ paddingVertical: 10, paddingHorizontal: 12 }}
+                      >
+                      <Text style={{ fontSize: 16, color: Colors.light.text }}>
+                        <Text style={{ fontWeight: "700" }}>{o.time}</Text>
+                        {` • ${o.title}`}
+                      </Text>
+                      </TouchableOpacity>
+                    ))}
+                  </ScrollView>
+                </View>
+              )}
+            </View>
+          </View>
+          <View style={{ marginTop: 30 }}>
+            <TouchableOpacity
+              onPress={goToScanning}
+              style={[styles.buttonOption, isDisabled && { opacity: 0.5 }]}
+              disabled={isDisabled}
+            >
+              <Text style={styles.buttonOptionText}>Перейти до сканування</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-        <TouchableOpacity
-          onPress={goToScanning}
-          style={[styles.buttonOption, isDisabled && { opacity: 0.5 }]}
-          disabled={isDisabled}
-        >
-          <Text style={styles.buttonOptionText}>Перейти до сканування</Text>
-        </TouchableOpacity> */}
+      </View>
     </SafeAreaView>
   );
 }

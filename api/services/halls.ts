@@ -13,6 +13,5 @@ export const getHalls = async (cinemaId: string): Promise<Hall[]> => {
   const { data } = await hallsInstance.get("", {
     params: { filters: JSON.stringify({ cinemaId }) },
   });
-  console.log('Halls data', data);
   return data.data;
 };

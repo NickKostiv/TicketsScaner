@@ -17,7 +17,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Keyboard } from "react-native";
 
 import { styles } from "./styles";
-import { getCinemaIdFromToken, getStoredCinemaId } from "@/utils/jwt";
+import { getCinemaIdFromToken } from "@/utils/jwt";
+import { Colors } from "@/constants/Colors";
 
 export default function Login() {
 
@@ -47,7 +48,6 @@ export default function Login() {
       if (cinemaId) {
         await AsyncStorage.setItem("cinemaId", cinemaId);
       } 
-      // console.log('Cinema ID', cinemaId);
 
 
       router.push("/(tabs)");
@@ -123,7 +123,7 @@ export default function Login() {
               <TextInput
                 style={styles.input}
                 placeholder="E-MAIL"
-                placeholderTextColor="#999"
+                placeholderTextColor={Colors.light.textDisabled}
                 value={email}
                 returnKeyType="next"
                 onChangeText={(text) => {
@@ -147,7 +147,7 @@ export default function Login() {
               <TextInput
                 style={styles.input}
                 placeholder="ВВЕДІТЬ ПАРОЛЬ"
-                placeholderTextColor="#999"
+                placeholderTextColor={Colors.light.textDisabled}
                 secureTextEntry={!showPassword}
                 value={password}
                 returnKeyType="done"
@@ -165,7 +165,7 @@ export default function Login() {
                 <Ionicons
                   name={showPassword ? "eye-outline" : "eye-off-outline"}
                   size={24}
-                  color="#999"
+                  color={Colors.light.textDisabled}
                 />
               </TouchableOpacity>
             </View>

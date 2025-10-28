@@ -8,7 +8,8 @@ const tintColorDark = "#fff";
 
 export const Colors = {
   light: {
-    text: "#11181C",
+    text: "#001C3D",
+    textDisabled: "#A0A0A0",
     tint: tintColorLight,
     icon: "#687076",
     tabIconDefault: "#687076",
@@ -16,8 +17,9 @@ export const Colors = {
     // App palette
     white: "#ffffff",
     primary: "#7eade5",
+    secondary: "#BBDEFB",
     accent: "#3885de",
-    background: "#EFF6FF",
+    background: "#E3F2FD",
     secondaryBackground: "#e3f2fd",
   },
   dark: {

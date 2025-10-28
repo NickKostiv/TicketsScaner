@@ -6,53 +6,53 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 50,
     paddingTop: 20,
     paddingBottom: 50,
-    // flex: 1,
-    backgroundColor: Colors.light.background, 
+    flex: 1,
+    backgroundColor: Colors.light.background,
+  },
+  wrapperContent: {
+    flex: 1,
   },
   title: {
     fontSize: 26,
     textAlign: "center",
   },
 
-  wrapperHallSelect: {
-    marginTop: 40,
-  },
-
-  hallLabel: {
+  label: {
     fontSize: 16,
     fontWeight: 500,
+    marginTop: 15,
     marginLeft: 4,
     marginBottom: 10,
   },
-  selectHallContainer: {
-    backgroundColor: "white",
-    borderRadius: 12,
-    marginTop: 8,
+  selector: {
+    borderWidth: 1,
+    borderColor: Colors.light.primary,
+    borderRadius: 20,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    backgroundColor: Colors.light.white,
+  },
+  selectorDropdown: {
+    marginTop: 3,
+    borderWidth: 1,
+    borderColor: Colors.light.primary,
+    borderRadius: 20,
+    backgroundColor: Colors.light.white,
+    paddingHorizontal: 0,
+    paddingVertical: 5,
+    maxHeight: 220,
   },
 
-  wrapperSessionSelect: {
-    marginTop: 30,
-  },
-  sessionLabel: {
-    fontSize: 16,
-    fontWeight: 500,
-    marginLeft: 4,
-  },
-  selectSessionContainer: {
-    backgroundColor: "white",
-    borderRadius: 12,
-    marginTop: 6,
-  },
   buttonOption: {
-    backgroundColor: "#7EADE5",
-    borderRadius: 12,
+    backgroundColor: Colors.light.primary,
+    borderRadius: 50,
     height: 50,
     justifyContent: "center",
     alignItems: "center",
     marginTop: "auto",
   },
   buttonOptionText: {
-    color: "white",
+    color: Colors.light.white,
     fontSize: 16,
     fontWeight: "bold",
   },

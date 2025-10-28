@@ -1,5 +1,6 @@
 import { Tabs, usePathname } from "expo-router";
 import { ScanQrCode, Settings } from "lucide-react-native";
+import { Colors } from "@/constants/Colors";
 
 export default function TabsLayout() {
   const pathname = usePathname();
@@ -8,8 +9,8 @@ export default function TabsLayout() {
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: "#007AFF",
-        tabBarInactiveTintColor: "#8E8E93",
+        tabBarActiveTintColor: Colors.light.accent,
+        tabBarInactiveTintColor: Colors.light.textDisabled,
 
         tabBarStyle: {
           height: 74,

@@ -8,28 +8,36 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useDropdownClose } from "@/screens/ optionsSelection/hooks/useDropdownClose";
 import { Colors } from "@/constants/Colors";
 import { useGetCinemaId } from "@/hooks/useGetCinameId";
-import { useGetHallsOptions } from "@/screens/ optionsSelection/hooks/useGetHallsOptions";
-import { useGetSessionsOptions } from "@/screens/ optionsSelection/hooks/useGetSessionsOptions";
+import { useGetSessionsOptions } from "@/screens/ optionsSelection/hooks/useGetSessions";
+import { useStore } from "@/store/store";
+import { useGetHalls } from "@/screens/ optionsSelection/hooks/useGetHalls";
 
 export default function OptionsSelection() {
+  const { cinemaId } = useGetCinemaId();
   const router = useRouter();
 
   const [selectedHall, setSelectedHall] = useState<string | null>(null);
   const [selectedSession, setSelectedSession] = useState<string | null>(null);
-  const { cinemaId } = useGetCinemaId();
+  
+  const { data: halls = [], isLoading: isHallLoading, error: hallError } = useGetHalls(cinemaId);
+  const hallOptions = halls.map((h) => ({ label: h.name, value: h.id }));
   const {
-    data: hallOptions = [],
-    isLoading: isHallLoading,
-    error: hallError,
-  } = useGetHallsOptions(cinemaId);
-  const {
-    data: sessionOptions = [],
+    data: sessions = [],
     isLoading: isSessionLoading,
     error: sessionError,
   } = useGetSessionsOptions(cinemaId, selectedHall);
+  const sessionOptions = sessions.map((s) => ({
+    label: s.label,
+    value: s.value,
+    time: s.time,
+    title: s.title,
+  }));
+
   const [isHallDropdownOpen, setIsHallDropdownOpen] = useState(false);
   const [isSessionDropdownOpen, setIsSessionDropdownOpen] = useState(false);
-
+  
+  const setHallInStore = useStore((s: any) => s.setHall);
+  const setSessionInStore = useStore((s: any) => s.setSession);
   // Reset session when hall changes
   useEffect(() => {
     setSelectedSession(null);
@@ -96,6 +104,8 @@ export default function OptionsSelection() {
                       key={o.value}
                       onPress={() => {
                         setSelectedHall(o.value);
+                        const hall = halls.find((h) => h.id === o.value);
+                        if (hall) setHallInStore(hall);
                         setIsHallDropdownOpen(false);
                       }}
                       style={{ paddingVertical: 10, paddingHorizontal: 12 }}
@@ -138,11 +148,13 @@ export default function OptionsSelection() {
               {isSessionDropdownOpen && (
                 <View style={styles.selectorDropdown}>
                   <ScrollView style={{ maxHeight: 220 }}>
-                    {sessionOptions.map((o) => (
+                  {sessionOptions.map((o) => (
                       <TouchableOpacity
                         key={o.value}
                         onPress={() => {
                           setSelectedSession(o.value);
+                        const session = sessionOptions.find((session) => session.value === o.value);
+                          if (session) setSessionInStore(session);
                           setIsSessionDropdownOpen(false);
                         }}
                         style={{ paddingVertical: 10, paddingHorizontal: 12 }}

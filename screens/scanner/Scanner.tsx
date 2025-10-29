@@ -5,6 +5,9 @@ import { useLocalSearchParams } from "expo-router";
 import { styles } from "./styles";
 import { ManualEntry } from "./ui/ManualEntry/ui/ManualEntry";
 import { TicketScanner } from "./ui/TicketScanner/ui/TicketScanner";
+import { useGetCinemaId } from "@/hooks/useGetCinameId";
+import { useQueryClient } from "@tanstack/react-query";
+import { useStore } from "@/store/store";
 
 export default function Scanner() {
   const [isManualEntry, setIsManualEntry] = useState(false);
@@ -13,7 +16,11 @@ export default function Scanner() {
     setIsManualEntry((prev) => !prev);
   };
 
-  const { hall, session } = useLocalSearchParams();
+  const hallFromStore = useStore((s: any) => s.hall);
+
+  
+  console.log('hallFromStore', hallFromStore);
+
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -29,13 +36,13 @@ export default function Scanner() {
             style={{ flexDirection: "row", alignItems: "center", columnGap: 8 }}
           >
             <Text style={{ fontSize: 20 }}>Зал:</Text>
-            <Text style={{ fontSize: 18 }}>{hall}</Text>
+            <Text style={{ fontSize: 18 }}>{hallFromStore?.name}</Text>
           </View>
           <View
             style={{ flexDirection: "row", alignItems: "center", columnGap: 8 }}
           >
             <Text style={{ fontSize: 20 }}>Сеанс:</Text>
-            <Text style={{ fontSize: 18 }}>{session}</Text>
+            <Text style={{ fontSize: 18 }}>{"session"}</Text>
           </View>
         </View>
 

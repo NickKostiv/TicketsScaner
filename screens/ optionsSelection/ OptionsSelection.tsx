@@ -17,27 +17,31 @@ export default function OptionsSelection() {
   const [selectedHall, setSelectedHall] = useState<string | null>(null);
   const [selectedSession, setSelectedSession] = useState<string | null>(null);
   const { cinemaId } = useGetCinemaId();
-  const { hallOptions } = useGetHallsOptions(cinemaId);
-  const { sessionOptions } = useGetSessionsOptions(cinemaId, selectedHall);
+  const {
+    data: hallOptions = [],
+    isLoading: isHallLoading,
+    error: hallError,
+  } = useGetHallsOptions(cinemaId);
+  const {
+    data: sessionOptions = [],
+    isLoading: isSessionLoading,
+    error: sessionError,
+  } = useGetSessionsOptions(cinemaId, selectedHall);
   const [isHallDropdownOpen, setIsHallDropdownOpen] = useState(false);
   const [isSessionDropdownOpen, setIsSessionDropdownOpen] = useState(false);
 
- 
-  console.log("hallOptions", hallOptions);
-  console.log("sessionOptions", sessionOptions);
-
-// Reset session when hall changes
+  // Reset session when hall changes
   useEffect(() => {
     setSelectedSession(null);
     setIsSessionDropdownOpen(false);
   }, [selectedHall]);
 
-useDropdownClose(
-  isHallDropdownOpen,
-  setIsHallDropdownOpen,
-  isSessionDropdownOpen,
-  setIsSessionDropdownOpen
-);
+  useDropdownClose(
+    isHallDropdownOpen,
+    setIsHallDropdownOpen,
+    isSessionDropdownOpen,
+    setIsSessionDropdownOpen
+  );
 
   const goToScanning = () => {
     router.push({
@@ -52,7 +56,9 @@ useDropdownClose(
   const isDisabled = !selectedHall || !selectedSession;
   const selectedHallLabel =
     hallOptions.find((o) => o.value === selectedHall)?.label || "Оберіть зал";
-  const selectedSessionOption = sessionOptions.find((o) => o.value === selectedSession);
+  const selectedSessionOption = sessionOptions.find(
+    (o) => o.value === selectedSession
+  );
   const selectedSessionLabel = selectedSessionOption?.label || "Оберіть сеанс";
 
   return (
@@ -71,7 +77,12 @@ useDropdownClose(
               style={styles.selector}
             >
               <Text
-                style={{ color: selectedHall ? Colors.light.text : Colors.light.textDisabled, fontSize: 16 }}
+                style={{
+                  color: selectedHall
+                    ? Colors.light.text
+                    : Colors.light.textDisabled,
+                  fontSize: 16,
+                }}
               >
                 {selectedHallLabel}
               </Text>
@@ -114,7 +125,9 @@ useDropdownClose(
               >
                 <Text
                   style={{
-                    color: selectedSession ? Colors.light.text : Colors.light.textDisabled,
+                    color: selectedSession
+                      ? Colors.light.text
+                      : Colors.light.textDisabled,
                     fontSize: 16,
                   }}
                 >
@@ -125,7 +138,7 @@ useDropdownClose(
               {isSessionDropdownOpen && (
                 <View style={styles.selectorDropdown}>
                   <ScrollView style={{ maxHeight: 220 }}>
-                  {sessionOptions.map((o) => (
+                    {sessionOptions.map((o) => (
                       <TouchableOpacity
                         key={o.value}
                         onPress={() => {
@@ -134,10 +147,12 @@ useDropdownClose(
                         }}
                         style={{ paddingVertical: 10, paddingHorizontal: 12 }}
                       >
-                      <Text style={{ fontSize: 16, color: Colors.light.text }}>
-                        <Text style={{ fontWeight: "700" }}>{o.time}</Text>
-                        {` • ${o.title}`}
-                      </Text>
+                        <Text
+                          style={{ fontSize: 16, color: Colors.light.text }}
+                        >
+                          <Text style={{ fontWeight: "700" }}>{o.time}</Text>
+                          {` • ${o.title}`}
+                        </Text>
                       </TouchableOpacity>
                     ))}
                   </ScrollView>

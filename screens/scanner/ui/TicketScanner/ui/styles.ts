@@ -1,9 +1,11 @@
+import { Colors } from "@/constants/Colors";
 import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#EFF6FF",
+    justifyContent: "center",
+    alignItems: "center",
   },
   bgContainer: {
     position: "absolute",
@@ -15,12 +17,10 @@ export const styles = StyleSheet.create({
     alignItems: "center",
   },
   dialogContainer: {
-    position: "absolute",
-    bottom: 0,
+    
     width: "100%",
-    backgroundColor: "white",
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
+    backgroundColor: Colors.light.white,
+    borderRadius: 20,
     padding: 20,
     alignItems: "center",
   },
@@ -38,19 +38,19 @@ export const styles = StyleSheet.create({
   button: {
     width: "100%",
     height: 50,
-    borderRadius: 20,
+    borderRadius: 50,
     justifyContent: "center",
     alignItems: "center",
     marginVertical: 8,
   },
   allowButton: {
-    backgroundColor: "#7EADE5",
+    backgroundColor: Colors.light.primary,
   },
   continueButton: {
-    backgroundColor: "#E5A47E",
+    backgroundColor: Colors.light.alert,
   },
   buttonText: {
-    color: "white",
+    color: Colors.light.white,
     fontWeight: "bold",
     fontSize: 16,
   },
@@ -129,6 +129,20 @@ export const styles = StyleSheet.create({
   modalBody: {
     padding: 20,
     alignItems: "center",
+  },
+  modalBodyInfo : {
+    marginBottom: 20,
+    gap: 10,
+  },
+  modalBodyInfoText: {
+    fontSize: 18,
+  },
+  modalBodyInfoTextHighlighted: {
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  modalButtonContainer: {
+
   },
   modalButton: {
     backgroundColor: "#7EADE5",

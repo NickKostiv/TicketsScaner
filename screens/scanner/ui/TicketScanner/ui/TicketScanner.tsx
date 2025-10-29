@@ -22,7 +22,7 @@ export const TicketScanner = () => {
   const [showPermissionDialog, setShowPermissionDialog] = useState(true);
   const [scanned, setScanned] = useState(false);
   const [showResultModal, setShowResultModal] = useState(false);
-  const [ticketValid, setTicketValid] = useState(true);
+  const [ticketValid, setTicketValid] = useState(false);
   const scanLineAnimation = useRef(new Animated.Value(0)).current;
 
   const toggleShowResultModal = () => {
@@ -117,7 +117,7 @@ export const TicketScanner = () => {
             style={[styles.button, styles.continueButton]}
             onPress={continueWithoutCamera}
           >
-            <Text style={styles.buttonText}>ПРОДОВЖИТИ</Text>
+            <Text style={styles.buttonText}>СКАСУВАТИ</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -190,14 +190,27 @@ export const TicketScanner = () => {
             </View>
 
             <View style={styles.modalBody}>
-              <TouchableOpacity
-                style={styles.modalButton}
-                onPress={handleCloseModal}
-              >
-                <Text style={styles.modalButtonText}>
-                  {ticketValid ? "OK" : "Спробувати ще"}
-                </Text>
-              </TouchableOpacity>
+              <View style={styles.modalBodyInfo}>
+                <Text style={styles.modalBodyInfoText}>Кінотеатр: <Text style={styles.modalBodyInfoTextHighlighted}>{'Cinema'}</Text> </Text>
+                <Text style={styles.modalBodyInfoText}>Фільм: <Text style={styles.modalBodyInfoTextHighlighted}>{'Фільм'}</Text></Text>
+                <Text style={styles.modalBodyInfoText}>Дата та час сеансу: <Text style={styles.modalBodyInfoTextHighlighted}>{'12.11.2025 12:00'}</Text></Text>
+                <Text style={styles.modalBodyInfoText}>Зал: <Text style={styles.modalBodyInfoTextHighlighted}>{'Зал'}</Text></Text>
+                <Text style={styles.modalBodyInfoText}>Ряд: <Text style={styles.modalBodyInfoTextHighlighted}>{'Ряд'}</Text></Text>
+                <Text style={styles.modalBodyInfoText}>Місце: <Text style={styles.modalBodyInfoTextHighlighted}>{'Місце'}</Text></Text>
+                <Text style={styles.modalBodyInfoText}>Тип квитка: <Text style={styles.modalBodyInfoTextHighlighted}>{'Тип квитка'}</Text></Text>
+                <Text style={styles.modalBodyInfoText}>Статус: <Text style={styles.modalBodyInfoTextHighlighted}>{'Статус'}</Text></Text>
+              </View>
+
+              <View style={styles.modalButtonContainer}>
+                <TouchableOpacity
+                  style={styles.modalButton}
+                  onPress={handleCloseModal}
+                >
+                  <Text style={styles.modalButtonText}>
+                    {ticketValid ? "OK" : "Спробувати ще"}
+                  </Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
         </View>

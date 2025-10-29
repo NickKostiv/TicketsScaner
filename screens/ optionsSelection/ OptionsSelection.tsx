@@ -2,15 +2,16 @@ import { useRouter } from "expo-router";
 import { Text, TouchableOpacity, View, ScrollView } from "react-native";
 import { styles } from "./styles";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useDropdownClose } from "@/screens/ optionsSelection/hooks/useDropdownClose";
 import { Colors } from "@/constants/Colors";
 import { useGetCinemaId } from "@/hooks/useGetCinameId";
-import { useGetSessionsOptions } from "@/screens/ optionsSelection/hooks/useGetSessions";
+import { useGetSessions } from "@/screens/ optionsSelection/hooks/useGetSessions";
 import { useStore } from "@/store/store";
 import { useGetHalls } from "@/screens/ optionsSelection/hooks/useGetHalls";
+import { formatLocalTimeHHmm } from "@/utils/getDate";
 
 export default function OptionsSelection() {
   const { cinemaId } = useGetCinemaId();
@@ -25,19 +26,43 @@ export default function OptionsSelection() {
     data: sessions = [],
     isLoading: isSessionLoading,
     error: sessionError,
-  } = useGetSessionsOptions(cinemaId, selectedHall);
-  const sessionOptions = sessions.map((s) => ({
-    label: s.label,
-    value: s.value,
-    time: s.time,
-    title: s.title,
-  }));
+  } = useGetSessions(cinemaId, selectedHall);
+  const sessionOptions = sessions.map((s) => {
+    const time = formatLocalTimeHHmm(s.start);
+    const title = s.movie.title.length > 25 ? s.movie.title.slice(0, 24) + "…" : s.movie.title;
+    return {
+      label: `${time} • ${title}`,
+      value: s.id,
+      time,
+      title,
+    };
+  });
 
   const [isHallDropdownOpen, setIsHallDropdownOpen] = useState(false);
   const [isSessionDropdownOpen, setIsSessionDropdownOpen] = useState(false);
   
   const setHallInStore = useStore((s: any) => s.setHall);
   const setSessionInStore = useStore((s: any) => s.setSession);
+
+  const handleSelectHall = useCallback(
+    (hallId: string) => {
+      setSelectedHall(hallId);
+      const hall = halls.find((h) => h.id === hallId);
+      if (hall) setHallInStore(hall);
+      setIsHallDropdownOpen(false);
+    },
+    [halls]
+  );
+
+  const handleSelectSession = useCallback(
+    (sessionId: string) => {
+      setSelectedSession(sessionId);
+      const session = sessions.find((s) => s.id === sessionId);
+      if (session) setSessionInStore(session);
+      setIsSessionDropdownOpen(false);
+    },
+    [sessions]
+  );
   // Reset session when hall changes
   useEffect(() => {
     setSelectedSession(null);
@@ -102,12 +127,7 @@ export default function OptionsSelection() {
                   {hallOptions.map((o) => (
                     <TouchableOpacity
                       key={o.value}
-                      onPress={() => {
-                        setSelectedHall(o.value);
-                        const hall = halls.find((h) => h.id === o.value);
-                        if (hall) setHallInStore(hall);
-                        setIsHallDropdownOpen(false);
-                      }}
+                      onPress={() => handleSelectHall(o.value)}
                       style={{ paddingVertical: 10, paddingHorizontal: 12 }}
                     >
                       <Text style={{ fontSize: 16, color: Colors.light.text }}>
@@ -148,15 +168,10 @@ export default function OptionsSelection() {
               {isSessionDropdownOpen && (
                 <View style={styles.selectorDropdown}>
                   <ScrollView style={{ maxHeight: 220 }}>
-                  {sessionOptions.map((o) => (
+                    {sessionOptions.map((o) => (
                       <TouchableOpacity
                         key={o.value}
-                        onPress={() => {
-                          setSelectedSession(o.value);
-                        const session = sessionOptions.find((session) => session.value === o.value);
-                          if (session) setSessionInStore(session);
-                          setIsSessionDropdownOpen(false);
-                        }}
+                        onPress={() => handleSelectSession(o.value)}
                         style={{ paddingVertical: 10, paddingHorizontal: 12 }}
                       >
                         <Text

@@ -3,7 +3,6 @@ import { ScanQrCode, Settings } from "lucide-react-native";
 import { Colors } from "@/constants/Colors";
 
 export default function TabsLayout() {
-  const pathname = usePathname();
 
   return (
     <Tabs
@@ -37,7 +36,6 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="scanner"
         options={{
-          href: pathname !== "/" ? undefined : null,
           title: "Сканер",
           tabBarIcon: ({ color }) => <ScanQrCode size={30} color={color} />,
         }}

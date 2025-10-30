@@ -21,7 +21,7 @@ export const TicketScanner = () => {
   const [permission, requestPermission] = useCameraPermissions();
   const [showPermissionDialog, setShowPermissionDialog] = useState(true);
   const [scanned, setScanned] = useState(false);
-  const [showResultModal, setShowResultModal] = useState(false);
+  const [showResultModal, setShowResultModal] = useState(true);
   const [ticketValid, setTicketValid] = useState(false);
   const scanLineAnimation = useRef(new Animated.Value(0)).current;
 
@@ -83,10 +83,15 @@ export const TicketScanner = () => {
     if (scanned) return;
 
     setScanned(true);
-    setTicketValid(true);
+    setTicketValid(false);
     setShowResultModal(true);
 
+    //TODO: Implement ticket validation - 
+    //порівнюємо {result.data} з даними по GET /api/v1/tickets?filters={"barCode":123456789}
+    //{"barCode":100000007}
     console.log(`Код типу ${result.type} відскановано: ${result.data}`);
+    console.log(result);
+
   };
 
   const handleCloseModal = () => {
@@ -170,6 +175,7 @@ export const TicketScanner = () => {
           </TouchableOpacity>
         </View>
       )}
+      
       <Modal
         animationType="fade"
         transparent={true}

@@ -1,3 +1,7 @@
+import { TicketStateEnum } from "@/constants/ticketStateEnum";
+import { SessionSeat } from "../seat/sessionSeat";
+import { User } from "../user/user";
+import { TicketType } from "./ticketType";
 
 
 export type Ticket = {
@@ -7,7 +11,7 @@ export type Ticket = {
   scanTimes: number;
   sessionSeat: SessionSeat;
   ticketType: TicketType;
-  user: UserType | null;
+  user: User | null;
   customerName: string | null;
   customerEmail: string | null;
   customerPhone: string | null;

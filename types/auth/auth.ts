@@ -1,12 +1,6 @@
-export type FileType = {
-  id: string;
-  path: string;
-};
+import { FileType } from "../media/fileType";
+import { Role } from "./role";
 
-export type Role = {
-  id: number;
-  name?: string;
-};
 
 export type Status = {
   id: number | string;

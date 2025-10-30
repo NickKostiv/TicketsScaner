@@ -1,4 +1,7 @@
-import { Hall } from "./hall";
+import { Hall } from "../hall/hall";
+import { MovieTypeResponse } from "../movie/movie";
+import { PriceSchema } from "../priceSchema/priceSchema";
+
 
 export type HallSession = {
   id: string;

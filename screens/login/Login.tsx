@@ -1,5 +1,5 @@
 import { login } from "@/api/services/auth";
-import { LoginData, LoginResponse } from "@/types/auth";
+
 import { validateEmail } from "@/utils/validations";
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -19,6 +19,7 @@ import { Keyboard } from "react-native";
 import { styles } from "./styles";
 import { getCinemaIdFromToken } from "@/utils/jwt";
 import { Colors } from "@/constants/Colors";
+import { LoginData, LoginResponse } from "@/types/auth/auth";
 
 export default function Login() {
 

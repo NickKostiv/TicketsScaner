@@ -1,3 +1,7 @@
+import { SessionSeatState } from "@/constants/sessionSeatState";
+import { Seat } from "./seat";
+import { SeatType } from "./seatType";
+
 export type SessionSeat = {
     id: string;
     hallSession: {

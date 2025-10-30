@@ -1,6 +1,6 @@
 import axios, { AxiosInstance } from "axios";
 import { API_URL } from "../constants/apiURL";
-import { HallSession } from "@/types/session";
+import { HallSession } from "@/types/session/session";
 
 
 const sessionsInstance: AxiosInstance = axios.create({

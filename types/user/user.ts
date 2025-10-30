@@ -1,3 +1,6 @@
+import { Role } from "react-native";
+import { FileType } from "../media/fileType";
+import { Status } from "./status";
 
 
 export type User = {

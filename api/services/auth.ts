@@ -1,4 +1,5 @@
-import { LoginData, LoginResponse } from "@/types/auth";
+
+import { LoginData, LoginResponse } from "@/types/auth/auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios, { AxiosInstance } from "axios";
 

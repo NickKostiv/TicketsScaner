@@ -1,6 +1,7 @@
 import { getSessions } from "@/api/services/sessions";
-import { formatLocalTimeHHmm, getDateRangeForDay } from "@/utils/getDate";
-import { HallSession } from "@/types/session";
+import { HallSession } from "@/types/session/session";
+import { getDateRangeForDay } from "@/utils/getDate";
+
 import { useQuery } from "@tanstack/react-query";
 
 export function useGetSessions(cinemaId: string | null, hallId: string | null) {

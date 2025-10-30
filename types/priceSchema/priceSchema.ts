@@ -1,3 +1,7 @@
+import { WeekDay } from "@/constants/weekDay";
+import { SeatType } from "../seat/seatType";
+import { TicketType } from "../ticket/ticketType";
+
     export type PriceSchema = {
     id: string;
     name: string;

@@ -75,7 +75,7 @@ export default function Scanner() {
           <Text style={styles.infoText}>Відскановано квитків: 100</Text>
         </View> */}
 
-        <View style={{ paddingHorizontal: 40, marginVertical: 30 }}>
+        <View style={{ paddingHorizontal: 40, marginVertical: 30}}>
           <TouchableOpacity
             style={styles.manualEntryButton}
             onPress={toggleManualEntry}

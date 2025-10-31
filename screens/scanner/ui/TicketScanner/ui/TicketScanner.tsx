@@ -16,20 +16,26 @@ import {
 import QRBg from "../../../../../assets/images/QR-Bg.svg";
 
 import { styles } from "./styles";
-import { useGetTickets } from "../hooks/useGetTickets";
+import { useValidateEntry } from "@/screens/ optionsSelection/hooks/useValidateEntry";
+import { Ticket } from "@/types/ticket/ticket";
+import { getTicketStatusText } from "../utils/getTicketStatusText";
+import { TicketStateEnum } from "@/constants/ticketStateEnum";
 
 export const TicketScanner = () => {
   const [permission, requestPermission] = useCameraPermissions();
   const [showPermissionDialog, setShowPermissionDialog] = useState(true);
   const [scanned, setScanned] = useState(false);
-  const [barcode, setBarcode] = useState<number | null>(null)
   const [showResultModal, setShowResultModal] = useState(true);
-  const [ticketValid, setTicketValid] = useState(true);
+  // const [ticketValid, setTicketValid] = useState(true);
   const scanLineAnimation = useRef(new Animated.Value(0)).current;
 
-  const scannedTicket = useGetTickets(barcode, scanned)
-  console.log("findedTicket", scannedTicket)
-  const ticket = scannedTicket.data?.[0];
+  const { mutate, data, isPending, isSuccess, isError } = useValidateEntry();
+
+
+  // const scannedTicket = useGetTickets(barcode, scanned)
+  // console.log("findedTicket", scannedTicket)
+  // const ticket = scannedTicket.data?.[0];
+
 
   const toggleShowResultModal = () => {
     setShowResultModal((prev) => !prev);
@@ -88,25 +94,26 @@ export const TicketScanner = () => {
   const handleBarCodeScanned = (result: BarcodeScanningResult) => {
     if (scanned) return;
 
+    const barcode = Number(result.data);
     setScanned(true);
-    // setTicketValid(false);
-    // setShowResultModal(true);
-
-    //TODO: Implement ticket validation - 
-    //порівнюємо {result.data} з даними по GET /api/v1/tickets?filters={"barCode":123456789}
-    //{"barCode":100000007}
-    // console.log(`Код типу ${result.type} відскановано: ${result.data}`);
-    // console.log(result);
-
-    setBarcode(Number(result.data))
     setShowResultModal(true)
 
+    mutate(barcode);
+
   };
+
+   const isTicketValid = (ticket: Ticket): boolean => {
+    if(ticket.state === TicketStateEnum.SOLD && ticket.scanTimes ===1 ) {
+      return true;
+    }
+    return false;
+   }
 
   const handleCloseModal = () => {
     setShowResultModal(false);
     setScanned(false);
   };
+
 
   if (showPermissionDialog) {
     return (
@@ -191,49 +198,110 @@ export const TicketScanner = () => {
         visible={showResultModal}
         onRequestClose={handleCloseModal}
       >
+        { !data ? <View >Loading</View> :
+
+        
         <View style={styles.modalBackground}>
 
-          {
-            scannedTicket.isLoading ? <View> Loading</View> : <>
-              <View style={styles.modalContainer}>
-                <View
-                  style={[
-                    styles.modalHeader,
-                    ticketValid ? styles.validHeader : styles.invalidHeader,
-                  ]}
-                >
-                  <Text style={styles.modalHeaderText}>
-                    {ticketValid ? "Квиток Дійсний" : "Квиток не дійсний"}
+
+          <View style={styles.modalContainer}>
+            <View
+              style={[
+                styles.modalHeader,
+                isTicketValid(data.ticket) ? styles.validHeader : styles.invalidHeader,
+              ]}
+            >
+              <Text style={styles.modalHeaderText}>
+                {isTicketValid(data.ticket) ? "Квиток Дійсний" : "Квиток не дійсний"}
+              </Text>
+            </View>
+
+            <View style={styles.modalBody}>
+              {isSuccess && data && (
+                <View style={styles.modalBodyInfo}>
+                  <Text style={styles.modalBodyInfoText}>
+                    Кінотеатр:{" "}
+                    <Text style={styles.modalBodyInfoTextHighlighted}>
+                      {data.hallSessionDetails.hall.cinemaId ?? "-"}
+                    </Text>
+                  </Text>
+
+                  <Text style={styles.modalBodyInfoText}>
+                    Фільм:{" "}
+                    <Text style={styles.modalBodyInfoTextHighlighted}>
+                      {data.hallSessionDetails.movie.title ?? "-"}
+                    </Text>
+                  </Text>
+
+                  <Text style={styles.modalBodyInfoText}>
+                    Дата та час сеансу:{" "}
+                    <Text style={styles.modalBodyInfoTextHighlighted}>
+                      {new Date(data.hallSessionDetails.start).toLocaleString("uk-UA", {
+                        day: "2-digit",
+                        month: "2-digit",
+                        year: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </Text>
+                  </Text>
+
+                  <Text style={styles.modalBodyInfoText}>
+                    Зал:{" "}
+                    <Text style={styles.modalBodyInfoTextHighlighted}>
+                      {data.hallSessionDetails.hall.name ?? "-"}
+                    </Text>
+                  </Text>
+
+                  <Text style={styles.modalBodyInfoText}>
+                    Ряд:{" "}
+                    <Text style={styles.modalBodyInfoTextHighlighted}>
+                      {data.seatDetails.row ?? "-"}
+                    </Text>
+                  </Text>
+
+                  <Text style={styles.modalBodyInfoText}>
+                    Місце:{" "}
+                    <Text style={styles.modalBodyInfoTextHighlighted}>
+                      {data.seatDetails.number ?? "-"}
+                    </Text>
+                  </Text>
+
+                  <Text style={styles.modalBodyInfoText}>
+                    Тип квитка:{" "}
+                    <Text style={styles.modalBodyInfoTextHighlighted}>
+                      {data.seatDetails.seatType.name ?? "-"}
+                    </Text>
+                  </Text>
+
+
+
+                  <Text style={styles.modalBodyInfoText}>
+                    Статус:{" "}
+                    <Text style={styles.modalBodyInfoTextHighlighted}>
+                      {/* {getTicketStatusText(data.ticket)} */}'Статус'
+                    </Text>
                   </Text>
                 </View>
+              )}
 
-                <View style={styles.modalBody}>
-                  <View style={styles.modalBodyInfo}>
-                    <Text style={styles.modalBodyInfoText}>Кінотеатр: <Text style={styles.modalBodyInfoTextHighlighted}>{'Cinema'}</Text> </Text>
-                    <Text style={styles.modalBodyInfoText}>Фільм: <Text style={styles.modalBodyInfoTextHighlighted}>{'Фільм'}</Text></Text>
-                    <Text style={styles.modalBodyInfoText}>Дата та час сеансу: <Text style={styles.modalBodyInfoTextHighlighted}>{'12.11.2025 12:00'}</Text></Text>
-                    <Text style={styles.modalBodyInfoText}>Зал: <Text style={styles.modalBodyInfoTextHighlighted}>{'Зал'}</Text></Text>
-                    <Text style={styles.modalBodyInfoText}>Ряд: <Text style={styles.modalBodyInfoTextHighlighted}>{ticket?.sessionSeat?.row ?? "-"}</Text></Text>
-                    <Text style={styles.modalBodyInfoText}>Місце: <Text style={styles.modalBodyInfoTextHighlighted}>{ticket?.sessionSeat?.number ?? "-"}</Text></Text>
-                    <Text style={styles.modalBodyInfoText}>Тип квитка: <Text style={styles.modalBodyInfoTextHighlighted}>{ticket?.ticketType.name ?? "-"}</Text></Text>
-                    <Text style={styles.modalBodyInfoText}>Статус: <Text style={styles.modalBodyInfoTextHighlighted}>{'Статус'}</Text></Text>
-                  </View>
 
-                  <View style={styles.modalButtonContainer}>
-                    <TouchableOpacity
-                      style={styles.modalButton}
-                      onPress={handleCloseModal}
-                    >
-                      <Text style={styles.modalButtonText}>
-                        {ticketValid ? "OK" : "Спробувати ще"}
-                      </Text>
-                    </TouchableOpacity>
-                  </View>
-                </View>
+              <View style={styles.modalButtonContainer}>
+                <TouchableOpacity
+                  style={styles.modalButton}
+                  onPress={handleCloseModal}
+                >
+                  <Text style={styles.modalButtonText}>
+                    {isTicketValid(data.ticket) ? "OK" : "Спробувати ще"}
+                  </Text>
+                </TouchableOpacity>
               </View>
-            </>
-          }
+            </View>
+          </View>
+          {/* </> */}
+          {/* } */}
         </View>
+        }
       </Modal>
     </>
   );

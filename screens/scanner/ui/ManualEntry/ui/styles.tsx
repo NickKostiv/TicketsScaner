@@ -1,3 +1,4 @@
+import { Colors } from "@/constants/Colors";
 import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
@@ -9,19 +10,19 @@ export const styles = StyleSheet.create({
 
   codeInput: {
     borderWidth: 1,
-    borderRadius: 12,
-    borderColor: "black",
+    borderRadius: 50,
+    borderColor: Colors.light.primary,
     paddingHorizontal: 20,
     paddingVertical: 12,
     fontSize: 16,
   },
   manualEntryButton: {
     paddingVertical: 12,
-    backgroundColor: "#7EADE5",
-    borderRadius: 12,
+    backgroundColor: Colors.light.primary,
+    borderRadius: 50,
   },
   manualEntryText: {
-    color: "white",
+    color: Colors.light.white,
     fontWeight: 500,
     fontSize: 16,
     textAlign: "center",

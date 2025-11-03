@@ -8,28 +8,27 @@ import {
   Alert,
   Animated,
   Easing,
-  Modal,
   Text,
   TouchableOpacity,
-  View,
+  View
 } from "react-native";
 import QRBg from "../../../../../assets/images/QR-Bg.svg";
 
-import { styles } from "./styles";
+import { TicketStateEnum } from "@/constants/ticketStateEnum";
 import { useValidateEntry } from "@/screens/ optionsSelection/hooks/useValidateEntry";
 import { Ticket } from "@/types/ticket/ticket";
-import { getTicketStatusText } from "../utils/getTicketStatusText";
-import { TicketStateEnum } from "@/constants/ticketStateEnum";
+import { ScanResultModal } from "../../ScanResultModal/ui/ScanResultModal";
+import { styles } from "./styles";
 
 export const TicketScanner = () => {
   const [permission, requestPermission] = useCameraPermissions();
   const [showPermissionDialog, setShowPermissionDialog] = useState(true);
   const [scanned, setScanned] = useState(false);
-  const [showResultModal, setShowResultModal] = useState(true);
+  const [showResultModal, setShowResultModal] = useState(false);
   // const [ticketValid, setTicketValid] = useState(true);
   const scanLineAnimation = useRef(new Animated.Value(0)).current;
 
-  const { mutate, data, isPending, isSuccess, isError } = useValidateEntry();
+  const { mutate, data, isPending, isSuccess, isError, error } = useValidateEntry();
 
 
   // const scannedTicket = useGetTickets(barcode, scanned)
@@ -37,9 +36,9 @@ export const TicketScanner = () => {
   // const ticket = scannedTicket.data?.[0];
 
 
-  const toggleShowResultModal = () => {
-    setShowResultModal((prev) => !prev);
-  };
+  // const toggleShowResultModal = () => {
+  //   setShowResultModal((prev) => !prev);
+  // };
 
   useEffect(() => {
     startScanLineAnimation();
@@ -102,12 +101,12 @@ export const TicketScanner = () => {
 
   };
 
-   const isTicketValid = (ticket: Ticket): boolean => {
-    if(ticket.state === TicketStateEnum.SOLD && ticket.scanTimes ===1 ) {
+  const isTicketValid = (ticket: Ticket): boolean => {
+    if (ticket?.state === TicketStateEnum.SOLD && ticket.scanTimes === 1) {
       return true;
     }
     return false;
-   }
+  }
 
   const handleCloseModal = () => {
     setShowResultModal(false);
@@ -192,117 +191,7 @@ export const TicketScanner = () => {
         </View>
       )}
 
-      <Modal
-        animationType="fade"
-        transparent={true}
-        visible={showResultModal}
-        onRequestClose={handleCloseModal}
-      >
-        { !data ? <View >Loading</View> :
-
-        
-        <View style={styles.modalBackground}>
-
-
-          <View style={styles.modalContainer}>
-            <View
-              style={[
-                styles.modalHeader,
-                isTicketValid(data.ticket) ? styles.validHeader : styles.invalidHeader,
-              ]}
-            >
-              <Text style={styles.modalHeaderText}>
-                {isTicketValid(data.ticket) ? "Квиток Дійсний" : "Квиток не дійсний"}
-              </Text>
-            </View>
-
-            <View style={styles.modalBody}>
-              {isSuccess && data && (
-                <View style={styles.modalBodyInfo}>
-                  <Text style={styles.modalBodyInfoText}>
-                    Кінотеатр:{" "}
-                    <Text style={styles.modalBodyInfoTextHighlighted}>
-                      {data.hallSessionDetails.hall.cinemaId ?? "-"}
-                    </Text>
-                  </Text>
-
-                  <Text style={styles.modalBodyInfoText}>
-                    Фільм:{" "}
-                    <Text style={styles.modalBodyInfoTextHighlighted}>
-                      {data.hallSessionDetails.movie.title ?? "-"}
-                    </Text>
-                  </Text>
-
-                  <Text style={styles.modalBodyInfoText}>
-                    Дата та час сеансу:{" "}
-                    <Text style={styles.modalBodyInfoTextHighlighted}>
-                      {new Date(data.hallSessionDetails.start).toLocaleString("uk-UA", {
-                        day: "2-digit",
-                        month: "2-digit",
-                        year: "numeric",
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
-                    </Text>
-                  </Text>
-
-                  <Text style={styles.modalBodyInfoText}>
-                    Зал:{" "}
-                    <Text style={styles.modalBodyInfoTextHighlighted}>
-                      {data.hallSessionDetails.hall.name ?? "-"}
-                    </Text>
-                  </Text>
-
-                  <Text style={styles.modalBodyInfoText}>
-                    Ряд:{" "}
-                    <Text style={styles.modalBodyInfoTextHighlighted}>
-                      {data.seatDetails.row ?? "-"}
-                    </Text>
-                  </Text>
-
-                  <Text style={styles.modalBodyInfoText}>
-                    Місце:{" "}
-                    <Text style={styles.modalBodyInfoTextHighlighted}>
-                      {data.seatDetails.number ?? "-"}
-                    </Text>
-                  </Text>
-
-                  <Text style={styles.modalBodyInfoText}>
-                    Тип квитка:{" "}
-                    <Text style={styles.modalBodyInfoTextHighlighted}>
-                      {data.seatDetails.seatType.name ?? "-"}
-                    </Text>
-                  </Text>
-
-
-
-                  <Text style={styles.modalBodyInfoText}>
-                    Статус:{" "}
-                    <Text style={styles.modalBodyInfoTextHighlighted}>
-                      {/* {getTicketStatusText(data.ticket)} */}'Статус'
-                    </Text>
-                  </Text>
-                </View>
-              )}
-
-
-              <View style={styles.modalButtonContainer}>
-                <TouchableOpacity
-                  style={styles.modalButton}
-                  onPress={handleCloseModal}
-                >
-                  <Text style={styles.modalButtonText}>
-                    {isTicketValid(data.ticket) ? "OK" : "Спробувати ще"}
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </View>
-          {/* </> */}
-          {/* } */}
-        </View>
-        }
-      </Modal>
+      <ScanResultModal data={data} showResultModal={showResultModal} handleCloseModal={handleCloseModal} isTicketValid={isTicketValid} isSuccess={isSuccess} isPending={isPending} isError={isError} error={error} />
     </>
   );
 };

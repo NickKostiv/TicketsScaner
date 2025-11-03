@@ -17,7 +17,7 @@ export const styles = StyleSheet.create({
     alignItems: "center",
   },
   dialogContainer: {
-    
+
     width: "100%",
     backgroundColor: Colors.light.white,
     borderRadius: 20,
@@ -99,59 +99,5 @@ export const styles = StyleSheet.create({
     position: "absolute",
   },
 
-  modalBackground: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.5)",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  modalContainer: {
-    width: "80%",
-    backgroundColor: "white",
-    borderRadius: 15,
-    overflow: "hidden",
-  },
-  modalHeader: {
-    padding: 15,
-    alignItems: "center",
-  },
-  validHeader: {
-    backgroundColor: "#4CAF50",
-  },
-  invalidHeader: {
-    backgroundColor: "#F44336",
-  },
-  modalHeaderText: {
-    color: "white",
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  modalBody: {
-    padding: 20,
-    alignItems: "center",
-  },
-  modalBodyInfo : {
-    marginBottom: 20,
-    gap: 10,
-  },
-  modalBodyInfoText: {
-    fontSize: 18,
-  },
-  modalBodyInfoTextHighlighted: {
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  modalButtonContainer: {
 
-  },
-  modalButton: {
-    backgroundColor: "#7EADE5",
-    paddingVertical: 10,
-    paddingHorizontal: 30,
-    borderRadius: 10,
-  },
-  modalButtonText: {
-    color: "white",
-    fontWeight: "bold",
-  },
 });

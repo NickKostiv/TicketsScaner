@@ -22,6 +22,7 @@ export const Colors = {
     background: "#E3F2FD",
     secondaryBackground: "#e3f2fd",
     alert: "#D07878",
+    success: '#3f8240'
   },
   dark: {
     text: "#ECEDEE",

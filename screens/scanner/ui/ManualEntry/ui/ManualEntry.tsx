@@ -1,6 +1,4 @@
-import { TicketStateEnum } from "@/constants/ticketStateEnum";
-import { useValidateEntry } from "@/screens/ optionsSelection/hooks/useValidateEntry";
-import { Ticket } from "@/types/ticket/ticket";
+import { useTicketValidation } from "@/screens/ optionsSelection/hooks/useTicketValidation";
 import { FC, useState } from "react";
 import { Text, TextInput, TouchableOpacity, View } from "react-native";
 import { ScanResultModal } from "../../ScanResultModal/ui/ScanResultModal";
@@ -10,19 +8,13 @@ export const ManualEntry: FC = () => {
   const [code, setCode] = useState<string>("");
   const [showResultModal, setShowResultModal] = useState(false);
   const [scanned, setScanned] = useState(false);
-  const { mutate, data, isPending, isSuccess, isError, error } = useValidateEntry();
+  const { validate, status, ticketDetails, isTicketValid, error } = useTicketValidation();
 
   const handleCloseModal = () => {
     setShowResultModal(false);
     setScanned(false);
   };
 
-  const isTicketValid = (ticket: Ticket): boolean => {
-    if (ticket?.state === TicketStateEnum.SOLD && ticket.scanTimes === 1) {
-      return true;
-    }
-    return false;
-  }
 
   const handleManualEntry = (code: string) => {
     if (scanned) return;
@@ -31,7 +23,7 @@ export const ManualEntry: FC = () => {
     setScanned(true);
     setShowResultModal(true)
 
-    mutate(barcode);
+    validate(barcode);
 
   };
 
@@ -46,14 +38,24 @@ export const ManualEntry: FC = () => {
         />
 
         <TouchableOpacity
-          style={styles.manualEntryButton}
+          style={[
+            styles.manualEntryButton,
+            !code.trim() && { opacity: 0.4 },
+          ]}
+          disabled={!code.trim()}
           onPress={() => handleManualEntry(code)}
         >
           <Text style={styles.manualEntryText}>Перевірити код</Text>
         </TouchableOpacity>
       </View>
 
-      <ScanResultModal data={data} showResultModal={showResultModal} handleCloseModal={handleCloseModal} isTicketValid={isTicketValid} isSuccess={isSuccess} isPending={isPending} isError={isError} error={error} />
+      <ScanResultModal visible={showResultModal}
+        onClose={handleCloseModal}
+        status={status}
+        ticketDetails={ticketDetails}
+        isTicketValid={isTicketValid}
+        error={error} />
+
     </>
   );
 };

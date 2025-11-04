@@ -14,9 +14,7 @@ import {
 } from "react-native";
 import QRBg from "../../../../../assets/images/QR-Bg.svg";
 
-import { TicketStateEnum } from "@/constants/ticketStateEnum";
-import { useValidateEntry } from "@/screens/ optionsSelection/hooks/useValidateEntry";
-import { Ticket } from "@/types/ticket/ticket";
+import { useTicketValidation } from "@/screens/ optionsSelection/hooks/useTicketValidation";
 import { ScanResultModal } from "../../ScanResultModal/ui/ScanResultModal";
 import { styles } from "./styles";
 
@@ -25,20 +23,10 @@ export const TicketScanner = () => {
   const [showPermissionDialog, setShowPermissionDialog] = useState(true);
   const [scanned, setScanned] = useState(false);
   const [showResultModal, setShowResultModal] = useState(false);
-  // const [ticketValid, setTicketValid] = useState(true);
   const scanLineAnimation = useRef(new Animated.Value(0)).current;
 
-  const { mutate, data, isPending, isSuccess, isError, error } = useValidateEntry();
+  const { validate, status, ticketDetails, isTicketValid, error } = useTicketValidation();
 
-
-  // const scannedTicket = useGetTickets(barcode, scanned)
-  // console.log("findedTicket", scannedTicket)
-  // const ticket = scannedTicket.data?.[0];
-
-
-  // const toggleShowResultModal = () => {
-  //   setShowResultModal((prev) => !prev);
-  // };
 
   useEffect(() => {
     startScanLineAnimation();
@@ -97,16 +85,9 @@ export const TicketScanner = () => {
     setScanned(true);
     setShowResultModal(true)
 
-    mutate(barcode);
+    validate(barcode);
 
   };
-
-  const isTicketValid = (ticket: Ticket): boolean => {
-    if (ticket?.state === TicketStateEnum.SOLD && ticket.scanTimes === 1) {
-      return true;
-    }
-    return false;
-  }
 
   const handleCloseModal = () => {
     setShowResultModal(false);
@@ -191,7 +172,12 @@ export const TicketScanner = () => {
         </View>
       )}
 
-      <ScanResultModal data={data} showResultModal={showResultModal} handleCloseModal={handleCloseModal} isTicketValid={isTicketValid} isSuccess={isSuccess} isPending={isPending} isError={isError} error={error} />
+      <ScanResultModal visible={showResultModal}
+        onClose={handleCloseModal}
+        status={status}
+        ticketDetails={ticketDetails}
+        isTicketValid={isTicketValid}
+        error={error} />
     </>
   );
 };

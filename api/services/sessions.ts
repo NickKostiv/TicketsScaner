@@ -1,6 +1,6 @@
+import { HallSession } from "@/types/session/session";
 import axios, { AxiosInstance } from "axios";
 import { API_URL } from "../constants/apiURL";
-import { HallSession } from "@/types/session/session";
 
 
 const sessionsInstance: AxiosInstance = axios.create({
@@ -26,11 +26,9 @@ export const getSessions = async (params: SessionListParams): Promise<HallSessio
   const { data } = await sessionsInstance.get("", {
     params: {
       ...(params.filters ? { filters: JSON.stringify(params.filters) } : {}),
-    //   ...(params.sort ? { sort: params.sort.map((sort) => `${sort.orderBy}:${sort.order}`).join(',') } : {}),
       ...(params.page ? { page: params.page } : {}),
       ...(params.limit ? { limit: params.limit } : {}),
-      },
-    });
-  console.log('Sessions data', data);
+    },
+  });
   return data.data;
 };

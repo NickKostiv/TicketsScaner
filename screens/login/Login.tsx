@@ -7,6 +7,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import {
+  Keyboard,
   Text,
   TextInput,
   TouchableOpacity,
@@ -14,18 +15,17 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Keyboard } from "react-native";
 
-import { styles } from "./styles";
-import { getCinemaIdFromToken } from "@/utils/jwt";
 import { Colors } from "@/constants/Colors";
 import { LoginData, LoginResponse } from "@/types/auth/auth";
+import { getCinemaIdFromToken } from "@/utils/jwt";
+import { styles } from "./styles";
 
 export default function Login() {
 
-  
+
   const router = useRouter();
-  const [email, setEmail] = useState("manager@example.com");
+  const [email, setEmail] = useState("owner@example.com");
   const [password, setPassword] = useState("secret");
   const [showPassword, setShowPassword] = useState(false);
   const [isValidEmail, setIsValidEmail] = useState(true);
@@ -48,7 +48,7 @@ export default function Login() {
       const cinemaId = getCinemaIdFromToken(data.token);
       if (cinemaId) {
         await AsyncStorage.setItem("cinemaId", cinemaId);
-      } 
+      }
 
 
       router.push("/(tabs)");
@@ -91,7 +91,7 @@ export default function Login() {
     },
   });
 
- 
+
 
   const handleLogin = async () => {
     const isEmailValid = validateEmail(email);
@@ -188,22 +188,22 @@ export default function Login() {
               </Text>
             </TouchableOpacity>
           </View>
-       
-          </View>
+
+        </View>
 
         {/* Error message */}
         {errorMessage && (
           <View
-              style={styles.errorMessage}
+            style={styles.errorMessage}
           >
             <Text style={styles.errorMessageText}>
               {errorMessage}
             </Text>
           </View>
         )}
-         </SafeAreaView>
-          </TouchableWithoutFeedback>
+      </SafeAreaView>
+    </TouchableWithoutFeedback>
 
-   
+
   );
 }

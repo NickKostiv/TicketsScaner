@@ -1,4 +1,5 @@
-import { Personnel } from "@/types/auth";
+import { Personnel } from "@/types/auth/auth";
+
 
 
 

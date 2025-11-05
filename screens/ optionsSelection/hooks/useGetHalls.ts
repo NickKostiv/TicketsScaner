@@ -1,5 +1,5 @@
 import { getHalls } from "@/api/services/halls";
-import { Hall } from "@/types/hall";
+import { Hall } from "@/types/hall/hall";
 import { useQuery } from "@tanstack/react-query";
 
 export function useGetHalls(cinemaId: string | null) {

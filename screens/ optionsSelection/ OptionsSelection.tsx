@@ -6,28 +6,33 @@ import { useCallback, useEffect, useState } from "react";
 
 import { Colors } from "@/constants/Colors";
 import { useGetCinemaId } from "@/hooks/useGetCinameId";
-import { useDropdownClose } from "@/screens/ optionsSelection/hooks/useDropdownClose";
+import { useActiveDropdown } from "@/screens/ optionsSelection/hooks/useDropdownClose";
 import { useGetHalls } from "@/screens/ optionsSelection/hooks/useGetHalls";
 import { useGetSessions } from "@/screens/ optionsSelection/hooks/useGetSessions";
 import { useStore } from "@/store/store";
 import { formatLocalTimeHHmm } from "@/utils/getDate";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useGetCinemas } from "./hooks/useGetCinamas";
 
 export default function OptionsSelection() {
   const { cinemaId } = useGetCinemaId();
   const router = useRouter();
 
-  const [selectedCinemaId, setSelectedCinemaId] = useState<string | null>(null);
+  const [selectedCinema, setSelectedCinema] = useState<string | null>(cinemaId);
   const [selectedHall, setSelectedHall] = useState<string | null>(null);
   const [selectedSession, setSelectedSession] = useState<string | null>(null);
 
-  const { data: halls = [], isLoading: isHallLoading, error: hallError } = useGetHalls(cinemaId);
+  const { data: cinemas = [], isLoading: isCinemaLoading, error: cinemaError } = useGetCinemas();
+  const cinemaOptions = cinemas.map((c) => ({ label: c.name, value: c.id }));
+
+  const { data: halls = [], isLoading: isHallLoading, error: hallError } = useGetHalls(selectedCinema);
   const hallOptions = halls.map((h) => ({ label: h.name, value: h.id }));
+
   const {
     data: sessions = [],
     isLoading: isSessionLoading,
     error: sessionError,
-  } = useGetSessions(cinemaId, selectedHall);
+  } = useGetSessions(selectedCinema, selectedHall);
   const sessionOptions = sessions.map((s) => {
     const time = formatLocalTimeHHmm(s.start);
     const title = s.movie.title.length > 25 ? s.movie.title.slice(0, 24) + "…" : s.movie.title;
@@ -39,21 +44,38 @@ export default function OptionsSelection() {
     };
   });
 
-  const [isCinemaDropdownOpen, setIsCinemaDropdownOpen] = useState(false);
-  const [isHallDropdownOpen, setIsHallDropdownOpen] = useState(false);
-  const [isSessionDropdownOpen, setIsSessionDropdownOpen] = useState(false);
+  const { isOpen, toggle, close } = useActiveDropdown();
 
+  const isCinemaDropdownOpen = isOpen("cinema");
+  const isHallDropdownOpen = isOpen("hall");
+  const isSessionDropdownOpen = isOpen("session");
+
+
+  const setCinemaIdInStore = useStore((s: any) => s.setCinemaId);
   const setHallInStore = useStore((s: any) => s.setHall);
   const setSessionInStore = useStore((s: any) => s.setSession);
+
+  const handleSelectCinema = useCallback(
+    (cinemaId: string) => {
+      setSelectedCinema(cinemaId);
+      close();
+      setCinemaIdInStore(cinemas.find((c) => c.id === cinemaId));
+      setSelectedHall(null);
+      setSelectedSession(null);
+      setHallInStore(null);
+      setSessionInStore(null);
+    }, []
+  );
 
   const handleSelectHall = useCallback(
     (hallId: string) => {
       setSelectedHall(hallId);
       const hall = halls.find((h) => h.id === hallId);
       if (hall) setHallInStore(hall);
-      setIsHallDropdownOpen(false);
+      setSelectedSession(null);
+      close();
     },
-    [halls]
+    [halls, selectedCinema]
   );
 
   const handleSelectSession = useCallback(
@@ -61,31 +83,18 @@ export default function OptionsSelection() {
       setSelectedSession(sessionId);
       const session = sessions.find((s) => s.id === sessionId);
       if (session) setSessionInStore(session);
-      setIsSessionDropdownOpen(false);
+      close();
     },
     [sessions]
   );
 
-  const handleSelectCinema = useCallback(
-    (cinemaId: string) => {
-      setSelectedCinemaId(cinemaId);
-      setIsCinemaDropdownOpen(false);
-    }, []
-  );
+
 
   // Reset session when hall changes
   useEffect(() => {
     setSelectedSession(null);
-    setIsSessionDropdownOpen(false);
-  }, [selectedHall]);
+  }, [selectedCinema, selectedHall]);
 
-
-  useDropdownClose(
-    isHallDropdownOpen,
-    setIsHallDropdownOpen,
-    isSessionDropdownOpen,
-    setIsSessionDropdownOpen
-  );
 
   const goToScanning = () => {
     router.push({
@@ -103,6 +112,9 @@ export default function OptionsSelection() {
   const selectedSessionOption = sessionOptions.find(
     (o) => o.value === selectedSession
   );
+  const selectedCinemaLabel =
+    cinemaOptions.find((o) => o.value === selectedCinema)?.label ||
+    "Оберіть кінотеатр";
   const selectedSessionLabel = selectedSessionOption?.label || "Оберіть сеанс";
 
   return (
@@ -111,35 +123,34 @@ export default function OptionsSelection() {
         <Text style={styles.title}>Вибір параметрів</Text>
 
         <View>
-
-        <Text style={styles.label}>Вибір залу</Text>
+          <Text style={styles.label}>Вибір кінотеатру</Text>
 
           {/* Hall selection */}
           <View style={{ marginTop: 8 }}>
             <TouchableOpacity
-              onPress={() => setIsHallDropdownOpen((p) => !p)}
+              onPress={() => toggle("cinema")}
               activeOpacity={0.8}
               style={styles.selector}
             >
               <Text
                 style={{
-                  color: selectedHall
+                  color: selectedCinema
                     ? Colors.light.text
                     : Colors.light.textDisabled,
                   fontSize: 16,
                 }}
               >
-                {selectedHallLabel}
+                {selectedCinemaLabel}
               </Text>
             </TouchableOpacity>
 
-            {isHallDropdownOpen && (
+            {isCinemaDropdownOpen && (
               <View style={styles.selectorDropdown}>
                 <ScrollView style={{ maxHeight: 220 }}>
-                  {hallOptions.map((o) => (
+                  {cinemaOptions.map((o) => (
                     <TouchableOpacity
                       key={o.value}
-                      onPress={() => handleSelectHall(o.value)}
+                      onPress={() => handleSelectCinema(o.value)}
                       style={{ paddingVertical: 10, paddingHorizontal: 12 }}
                     >
                       <Text style={{ fontSize: 16, color: Colors.light.text }}>
@@ -157,9 +168,15 @@ export default function OptionsSelection() {
           {/* Hall selection */}
           <View style={{ marginTop: 8 }}>
             <TouchableOpacity
-              onPress={() => setIsHallDropdownOpen((p) => !p)}
+              disabled={!selectedCinema}
+              onPress={
+                () => {
+                  if (!selectedCinema) return;
+                  toggle("hall");
+                }
+              }
               activeOpacity={0.8}
-              style={styles.selector}
+              style={[styles.selector, { opacity: selectedCinema ? 1 : 0.6 }]}
             >
               <Text
                 style={{
@@ -199,8 +216,8 @@ export default function OptionsSelection() {
               <TouchableOpacity
                 disabled={!selectedHall}
                 onPress={() => {
-                  if (!selectedHall) return;
-                  setIsSessionDropdownOpen((p) => !p);
+                  if (!selectedHall && !selectedCinema) return;
+                  toggle("session");
                 }}
                 activeOpacity={0.8}
                 style={[styles.selector, { opacity: selectedHall ? 1 : 0.6 }]}
@@ -250,6 +267,6 @@ export default function OptionsSelection() {
           </View>
         </View>
       </View>
-    </SafeAreaView>
+    </SafeAreaView >
   );
 }

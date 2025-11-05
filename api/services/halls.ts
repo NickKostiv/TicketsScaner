@@ -1,4 +1,5 @@
-import { Hall } from "@/types/hall";
+
+import { Hall } from "@/types/hall/hall";
 import axios, { AxiosInstance } from "axios";
 import { API_URL } from "../constants/apiURL";
 

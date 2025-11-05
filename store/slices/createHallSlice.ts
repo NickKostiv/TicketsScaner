@@ -1,4 +1,5 @@
-import { Hall } from "@/types/hall";
+import { Hall } from "@/types/hall/hall";
+
 
 export const createHallSlice = (set: (state: any) => void) => ({
     hall: null,

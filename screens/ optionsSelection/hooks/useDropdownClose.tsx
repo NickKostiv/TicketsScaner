@@ -1,22 +1,15 @@
-import { Dispatch, SetStateAction, useEffect } from "react";
+import { useState } from "react";
 
-export const useDropdownClose = (
-  firstOpen: boolean,
-  setFirstOpen: Dispatch<SetStateAction<boolean>>,
-  secondOpen: boolean,
-  setSecondOpen: Dispatch<SetStateAction<boolean>>
-) => {
-  // When first opens, close second
-  useEffect(() => {
-    if (firstOpen) {
-      setSecondOpen(false);
-    }
-  }, [firstOpen, setSecondOpen]);
+export const useActiveDropdown = () => {
+  const [active, setActive] = useState<string | null>(null);
 
-  // When second opens, close first
-  useEffect(() => {
-    if (secondOpen) {
-      setFirstOpen(false);
-    }
-  }, [secondOpen, setFirstOpen]);
+  const toggle = (key: string) => {
+    setActive((prev) => (prev === key ? null : key));
+  };
+
+  const close = () => setActive(null);
+
+  const isOpen = (key: string) => active === key;
+
+  return { active, isOpen, toggle, close };
 };

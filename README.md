@@ -2,6 +2,9 @@
 
 Мобільний додаток для сканування квитків кінотеатру, розроблений з використанням Expo та React Native.
 
+Для завантаження apk 
+https://drive.google.com/file/d/1rum4MbMvPxgGmN4fzEzFpLhsrEYgsGQL/view?usp=drive_link
+
 ## Функціональність
 
 - Авторизація користувачів через електронну пошту або Google

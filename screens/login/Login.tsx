@@ -82,12 +82,12 @@ export default function Login() {
       }
 
       setErrorMessage(message);
-      console.log("AXIOS ERROR", {
-        message: (error as any)?.message,
-        code: (error as any)?.code,
-        url: (error as any)?.config?.baseURL + (error as any)?.config?.url,
-        status: (error as any)?.response?.status,
-      });
+      // console.log("AXIOS ERROR", {
+      //   message: (error as any)?.message,
+      //   code: (error as any)?.code,
+      //   url: (error as any)?.config?.baseURL + (error as any)?.config?.url,
+      //   status: (error as any)?.response?.status,
+      // });
     },
   });
 

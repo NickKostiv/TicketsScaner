@@ -68,7 +68,7 @@ export const TicketScanner = () => {
         );
       }
     } catch (err) {
-      console.error("Error requesting camera permission:", err);
+      // console.error("Error requesting camera permission:", err);
       Alert.alert("Помилка", "Не вдалося отримати доступ до камери.");
     }
     setShowPermissionDialog(false);

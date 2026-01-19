@@ -11,11 +11,11 @@ type ValidateEntryError = {
 export const useValidateEntry = () => {
   return useMutation<ValidateEntryResponse, AxiosError<ValidateEntryError>, number>({
     mutationFn: (barcode) => validateEntry(barcode),
-    onSuccess: (data) => {
-      console.log("✅ entry data:", data);
-    },
-    onError: (error: AxiosError) => {
-      console.log("❌ Помилка:", error.response?.data);
-    },
+    // onSuccess: (data) => {
+    //   console.log("✅ entry data:", data);
+    // },
+    // onError: (error: AxiosError) => {
+    //   console.log("❌ Помилка:", error.response?.data);
+    // },
   })
 }

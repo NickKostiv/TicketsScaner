@@ -1,5 +1,6 @@
 import { logout } from "@/api/services/auth";
 import { useAuth } from "@/hooks/useAuth";
+import { useStore } from "@/store/store";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
@@ -9,6 +10,7 @@ import { styles } from "./style";
 export const LogoutButton = () => {
   const { isAuthenticated } = useAuth();
   const router = useRouter();
+  const resetAll = useStore((s) => s.resetAll);
 
   const { mutate } = useMutation({
     mutationFn: logout,
@@ -16,11 +18,12 @@ export const LogoutButton = () => {
       await AsyncStorage.removeItem("accessToken");
       await AsyncStorage.removeItem("refreshToken");
 
+      resetAll();
       router.push("/login");
     },
-    onError: (error) => {
-      console.error("Logout failed", error);
-    },
+    // onError: (error) => {
+    //   console.error("Logout failed", error);
+    // },
   });
 
   const handleLogout = () => {

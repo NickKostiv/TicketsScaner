@@ -28,7 +28,7 @@ export const ManualEntry: FC = () => {
   };
 
   return (
-    <>
+    <View style={{ flex: 1, justifyContent: "center" }}>
       <View style={styles.wrapper}>
         <TextInput
           value={code}
@@ -56,6 +56,6 @@ export const ManualEntry: FC = () => {
         isTicketValid={isTicketValid}
         error={error} />
 
-    </>
+    </View>
   );
 };
